@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>سيارات المعرض</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<meta name="theme-color" content="#0E1517">
+<meta name="description" content="سيارات فارهة جاهزة للبيع في ليبيا: مواصفات وصور وأسعار واضحة، وتواصل مباشر عبر واتساب.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#E8ECEA; --surface:#F4F6F4; --raised:#FFFFFF; --ink:#0E1517; --muted:#56646A; --line:#CBD3D0;
+  --accent:#C9331D; --accent-ink:#FFFFFF; --teal:#0F6B6F;
+  --ok:#1F7A4D; --warn:#94600A; --crit:#B3261E; --info:#2A5DA8;
+  --ok-bg:#DDEFE5; --warn-bg:#F6E8C8; --crit-bg:#F5DAD6; --info-bg:#DCE6F5; --teal-bg:#D6E9E9; --mute-bg:#DDE3E0;
+  --f-display:'Reem Kufi','IBM Plex Sans Arabic',Tahoma,sans-serif;
+  --f-body:'IBM Plex Sans Arabic',Tahoma,system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1113; --surface:#111A1D; --raised:#172327; --ink:#E5ECEA; --muted:#93A3A8; --line:#27373C;
+    --accent:#FF6A4A; --accent-ink:#1A0B07; --teal:#5CC7C4;
+    --ok:#5BD08F; --warn:#E9B44C; --crit:#FF7A70; --info:#7FA8EE;
+    --ok-bg:#12301F; --warn-bg:#3A2C0E; --crit-bg:#3B1714; --info-bg:#14243E; --teal-bg:#0F2D2E; --mute-bg:#1D2A2E;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1113; --surface:#111A1D; --raised:#172327; --ink:#E5ECEA; --muted:#93A3A8; --line:#27373C;
+  --accent:#FF6A4A; --accent-ink:#1A0B07; --teal:#5CC7C4;
+  --ok:#5BD08F; --warn:#E9B44C; --crit:#FF7A70; --info:#7FA8EE;
+  --ok-bg:#12301F; --warn-bg:#3A2C0E; --crit-bg:#3B1714; --info-bg:#14243E; --teal-bg:#0F2D2E; --mute-bg:#1D2A2E;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-block:20px 12px}
+.brand{font-family:var(--f-display);font-size:26px;font-weight:700;line-height:1.2;text-wrap:balance}
+.brand small{display:block;font-family:var(--f-mono);font-size:11px;font-weight:400;letter-spacing:.14em;color:var(--muted);direction:ltr;text-align:right}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabin{display:flex;gap:2px;overflow-x:auto}
+.tab{font:inherit;font-weight:500;color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab:hover{color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.btn{font:inherit;font-size:14px;min-height:38px;padding:6px 14px;border:1px solid var(--line);background:var(--raised);color:var(--ink);border-radius:4px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.sm{min-height:30px;padding:2px 10px;font-size:13px}
+.btn.danger{color:var(--crit)}
+.btn[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--bg)}
+.view{padding-block:8px 64px}
+.banner{margin-top:16px;padding:10px 14px;background:var(--warn-bg);border:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:14px}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border:1px solid var(--line);background:var(--surface);margin-top:20px}
+.ro{padding:14px 16px;border-inline-start:1px solid var(--line);border-block-end:1px solid var(--line);margin-block-end:-1px}
+.ro:first-child{border-inline-start:0}
+.ro .l{font-size:13px;color:var(--muted)}
+.ro .v{font-family:var(--f-mono);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.3;direction:ltr;text-align:right}
+.ro .s{font-size:12.5px;color:var(--muted)}
+.panel{margin-top:32px}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+h2{font-family:var(--f-display);font-size:21px;font-weight:700;margin:0;text-wrap:balance}
+h3{font-family:var(--f-display);font-size:16px;font-weight:700;margin:0}
+.hint{color:var(--muted);font-size:13.5px;margin:4px 0 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+.tw{overflow-x:auto;border:1px solid var(--line);background:var(--raised)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:12.5px;font-weight:500;color:var(--muted);text-align:start;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--surface)}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+td.num,th.num{text-align:end}
+.pos{color:var(--ok)}.neg{color:var(--crit)}.mut{color:var(--muted)}
+.pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:99px;background:var(--mute-bg);color:var(--ink);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.crit{background:var(--crit-bg);color:var(--crit)}.pill.info{background:var(--info-bg);color:var(--info)}
+.pill.teal{background:var(--teal-bg);color:var(--teal)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.alerts{border:1px solid var(--line);background:var(--raised)}
+.al{display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.al:last-child{border-bottom:0}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--info)}
+.dot.crit{background:var(--crit)}.dot.warn{background:var(--warn)}
+.al .t{font-weight:500}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);background:var(--surface)}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:110px 1fr 90px;gap:10px;align-items:center;font-size:14px}
+.bar i{display:block;height:10px;background:var(--mute-bg);position:relative}
+.bar i::after{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:var(--w);background:var(--teal)}
+.bar b{font-weight:400;text-align:end;direction:rtl}
+.bar em{font-style:normal;color:var(--muted);font-size:12px}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(250px,1fr);gap:12px;overflow-x:auto;padding-bottom:10px}
+.col{background:var(--surface);border:1px solid var(--line);padding:10px;min-height:140px}
+.col h3{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.col h3 .num{font-size:12px;color:var(--muted)}
+.kc{background:var(--raised);border:1px solid var(--line);padding:10px 12px;margin-top:8px;border-radius:4px;cursor:pointer}
+.kc:hover{border-color:var(--muted)}
+.kc .n{font-weight:600}
+.kc .m{font-size:13px;color:var(--muted)}
+.kc .r{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ideas{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.idea{background:var(--raised);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:8px}
+.idea.chosen{background:var(--teal-bg);border-color:var(--teal)}
+.idea.skip{opacity:.55}
+.idea .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.pips{display:inline-flex;gap:3px}
+.pips i{width:10px;height:10px;background:var(--line);display:block}
+.pips i.on{background:var(--accent)}
+.idea p{margin:0}
+.idea details{font-size:13.5px}
+.idea summary{cursor:pointer;color:var(--teal);font-weight:500}
+.idea ol{margin:6px 0;padding-inline-start:20px}
+.idea .guard{margin-top:6px;padding:6px 10px;background:var(--warn-bg);color:var(--ink)}
+.idea .acts{display:flex;gap:6px;margin-top:auto;flex-wrap:wrap}
+.cat{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.cc{background:var(--raised);border:1px solid var(--line);display:flex;flex-direction:column}
+.cc .ph2{height:120px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:flex-end;justify-content:space-between;padding:10px 12px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.cc .bd{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.cc .nm{font-family:var(--f-display);font-size:18px;font-weight:700;line-height:1.3}
+.cc .sp{display:flex;gap:6px 12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.cc .pr{font-family:var(--f-mono);font-size:20px;font-weight:500;direction:ltr;text-align:right}
+.chk-list{display:grid;gap:0;border:1px solid var(--line);background:var(--raised)}
+.chk-list label{display:grid;grid-template-columns:22px 1fr;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk-list label:last-child{border-bottom:0}
+.chk-list b{font-weight:600}
+.chk-list span span{display:block;color:var(--muted);font-size:13.5px}
+.chk-list input{width:18px;height:18px;margin-top:3px;accent-color:var(--teal)}
+input,select,textarea{font:inherit;width:100%;padding:8px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:4px}
+input[type=checkbox]{width:auto}
+.search{max-width:240px}
+dialog{border:1px solid var(--line);background:var(--raised);color:var(--ink);padding:0;width:min(680px,calc(100vw - 24px));border-radius:6px;max-height:calc(100vh - 32px);overflow:auto}
+dialog::backdrop{background:rgba(5,10,12,.6)}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--raised);z-index:1}
+.db{padding:16px 18px}
+.df{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px;border-top:1px solid var(--line);background:var(--surface);position:sticky;bottom:0}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
+.field.full{grid-column:1/-1}
+.field.chk{display:flex;gap:8px;align-items:center}
+.field.chk span{font-size:14px}
+.field .bad{border-color:var(--crit)}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:14px}
+.sum div{background:var(--surface);padding:8px 12px}
+.sum .l{font-size:12px;color:var(--muted)}
+.sum .v{font-family:var(--f-mono);font-size:16px;direction:ltr;text-align:right}
+.toast{position:fixed;inset-inline:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:420px;margin-inline:auto;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:4px;z-index:50}
+.src{font-size:13px;color:var(--muted);margin-top:12px}
+.src a{color:var(--teal)}
+@media (max-width:560px){.bar{grid-template-columns:84px 1fr 74px}.brand{font-size:22px}}
+@media (prefers-reduced-motion:no-preference){.kc,.btn{transition:border-color .15s}}
+
+/* ---- v2 ---- */
+body{margin:0}
+.ic{flex:none;vertical-align:-3px}
+.tab{display:inline-flex;align-items:center;gap:7px}
+.tab .ic{opacity:.75}.tab[aria-selected="true"] .ic{opacity:1;color:var(--accent)}
+.tools .seg{display:inline-flex;gap:0}
+.tools .seg .btn{border-radius:0;min-height:30px}
+.tools .seg .btn:first-child{border-start-start-radius:4px;border-end-start-radius:4px}
+.tools .seg .btn:last-child{border-start-end-radius:4px;border-end-end-radius:4px;border-inline-start-width:0}
+.btn svg{margin-inline-end:0}
+.th{display:grid;place-items:center;width:56px;height:40px;background:var(--surface) center/cover no-repeat;border:1px solid var(--line);color:var(--muted);border-radius:3px}
+tr.click:focus-visible,.kc:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.ph{margin:0;border:1px solid var(--line);background:var(--surface);border-radius:4px;overflow:hidden}
+.ph img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.ph figcaption{display:flex;gap:4px;flex-wrap:wrap;padding:5px;justify-content:space-between;align-items:center}
+.ph figcaption .btn.sm{min-height:26px;padding:0 8px;font-size:12px}
+.ages{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ag{display:flex;flex-direction:column;gap:2px;padding:12px;border:1px solid var(--line);border-inline-start-width:4px;background:var(--raised)}
+.ag b{font-size:26px;font-family:var(--f-mono);font-weight:500;line-height:1.1}
+.ag span{font-size:13px}.ag em{font-style:normal;font-size:12px;color:var(--muted);direction:ltr;text-align:right}
+.ag.fresh{border-inline-start-color:var(--ok)}.ag.watch{border-inline-start-color:var(--info)}.ag.late{border-inline-start-color:var(--warn)}.ag.crit{border-inline-start-color:var(--crit)}
+.cc .ph2{background:var(--surface) center/cover no-repeat}
+.cc .ph2 span{background:var(--raised);padding:1px 8px;border-radius:99px}
+.field .hint{margin-top:2px}
+@media (max-width:560px){.ages{grid-template-columns:repeat(2,1fr)}.tab span{font-size:14px}.tools{width:100%;justify-content:space-between}}
+@media print{.tabs,.tools,.banner{display:none}}
+.ro .v .u{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:400}
+.tabin{scrollbar-width:none}.tabin::-webkit-scrollbar{display:none}.tab{padding-inline:12px}
+</style>
+<style>
+/* الموقع العام: يعيد استخدام رموز app.css (ألوان، خطوط، أزرار) */
+body.pub{background:var(--bg)}
+.ph-bar{background:var(--surface);color:var(--ink);border-bottom:3px solid var(--accent);position:sticky;top:0;z-index:5}
+.ph-bar .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:12px}
+.ph-bar .row-end{display:flex;gap:8px;align-items:center}
+.logo{font-family:var(--f-display);font-size:22px;font-weight:700;color:inherit;text-decoration:none}
+.sample{background:var(--warn-bg);color:var(--ink);text-align:center;padding:8px 16px;font-size:14px;border-bottom:1px solid var(--line)}
+.hero{padding-block:28px 8px}
+.hero h1{font-family:var(--f-display);font-size:clamp(26px,5vw,40px);line-height:1.25;margin:0;text-wrap:balance}
+.hero p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.fbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-block:18px;padding:14px;background:var(--surface);border:1px solid var(--line)}
+.fbar .field label{font-size:12.5px}
+.rcount{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.card{background:var(--raised);border:1px solid var(--line);display:flex;flex-direction:column;color:inherit;text-decoration:none;transition:border-color .15s}
+.card:hover{border-color:var(--muted)}
+.card:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.card .im{position:relative;aspect-ratio:4/3;background:var(--surface) center/cover no-repeat;display:grid;place-items:center;color:var(--muted);font-size:13px;border-bottom:1px solid var(--line)}
+.card .im .tag{position:absolute;inset-block-start:10px;inset-inline-start:10px;display:flex;gap:6px}
+.card .bd{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
+.card .nm{font-family:var(--f-display);font-size:19px;font-weight:700;line-height:1.3}
+.card .yr{color:var(--muted);font-size:13.5px}
+.card .sp{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
+.card .pr{font-family:var(--f-mono);font-size:22px;font-weight:500;direction:ltr;text-align:right;margin-top:4px}
+.badge{font-size:12px;padding:2px 10px;border-radius:99px;background:var(--raised);color:var(--ink);border:1px solid var(--line)}
+.badge.ok{background:var(--ok-bg);color:var(--ok);border-color:transparent}.badge.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.crumb{padding-block:16px 4px;font-size:14px}.crumb a{color:var(--teal)}
+.det{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:24px;align-items:start;padding-block:8px 32px}
+@media (max-width:820px){.det{grid-template-columns:1fr}}
+.gal .main{aspect-ratio:4/3;background:var(--surface) center/contain no-repeat;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted)}
+.gal .main img{width:100%;height:100%;object-fit:contain;display:block;background:var(--surface)}
+.gal .ths{display:flex;gap:6px;margin-top:8px;overflow-x:auto;padding-bottom:4px}
+.gal .ths button{flex:none;width:76px;height:56px;padding:0;border:2px solid transparent;background:var(--surface);cursor:pointer}
+.gal .ths button[aria-current="true"]{border-color:var(--accent)}
+.gal .ths img{width:100%;height:100%;object-fit:cover;display:block}
+.side{position:sticky;top:76px;display:grid;gap:14px}
+@media (max-width:820px){.side{position:static}}
+.box{background:var(--raised);border:1px solid var(--line);padding:16px}
+.box h1{font-family:var(--f-display);font-size:26px;line-height:1.25;margin:0 0 4px}
+.box .pr{font-family:var(--f-mono);font-size:30px;font-weight:500;direction:ltr;text-align:right;margin-block:8px}
+.box .alt{font-family:var(--f-mono);font-size:14px;color:var(--muted);direction:ltr;text-align:right}
+.specs{width:100%;border-collapse:collapse}
+.specs th,.specs td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:start;font-size:14.5px;background:none}
+.specs th{color:var(--muted);font-weight:400;width:40%}
+.feat{display:flex;flex-wrap:wrap;gap:6px}
+.form{display:grid;gap:10px}
+.hp{position:absolute;inset-inline-start:-9999px;height:0;overflow:hidden}
+.foot{padding-block:24px 48px;font-size:13.5px}
+.ctas{display:grid;gap:8px}
+.ctas .btn{justify-content:center;min-height:44px}
+@media (max-width:560px){.fbar{grid-template-columns:1fr 1fr;padding:10px;gap:8px}.fbar .field:first-child{grid-column:1/-1}.ph-bar .logo{font-size:19px}.hero{padding-block:18px 0}}
+</style>
+</head>
+<body class="pub">
+<header class="ph-bar">
+  <div class="wrap row">
+    <a class="logo" href="#/" id="logo">سيارات المعرض</a>
+    <div class="row-end">
+      <span id="curBox"></span>
+      <a class="btn primary" id="waTop" href="#" target="_blank" rel="noopener" hidden>واتساب</a>
+    </div>
+  </div>
+</header>
+<div id="sampleBar" class="sample" hidden>بيانات تجريبية للمعاينة فقط. السيارات والأسعار غير حقيقية.</div>
+<main class="wrap" id="main" tabindex="-1"></main>
+<footer class="wrap foot"><p id="foot"></p><p class="mut">الأسعار وتوفر السيارات وحالتها تُؤكَّد كتابيًا من المعرض قبل أي التزام.</p></footer>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script>
+(function () {
+"use strict";
+var __mods = {}, __cache = {};
+function __req(id) { if (__cache[id]) return __cache[id].exports; var m = __cache[id] = { exports: {} }; if (!__mods[id]) throw new Error('module missing: ' + id); __mods[id](m.exports, __req); return m.exports; }
+
+__mods["js/core.js"] = function (exports, __req) {
+// النواة: الثوابت، الحالة، الحسابات، التنبيهات. لا تلمس DOM هنا إلا في toast.
+const S = { cars: [], leads: [], tx: [], ideas: [], web: [], audit: [], requests: [], set: null };
+const DEFAULT_SET = { baseCur: 'USD', displayCur: 'USD', usdRate: 0, eurRate: 0, agingDays: 60, holdPct: 1, whatsapp: '', name: '', city: '' };
+S.set = Object.assign({}, DEFAULT_SET);
+const ctx = { db: null };
+
+const CUR = { LYD: 'د.ل', USD: '$', EUR: '€' };
+const CS = { ordered: 'تم الشراء', shipping: 'في الشحن', port: 'بالميناء', customs: 'جمارك', available: 'جاهزة للبيع', reserved: 'محجوزة', sold: 'مباعة' };
+const CSC = { ordered: 'info', shipping: 'info', port: 'info', customs: 'warn', available: 'ok', reserved: 'warn', sold: '' };
+const TRANSIT = ['ordered', 'shipping', 'port', 'customs'];
+const STOCK = ['available', 'reserved'];
+const LS = { new: 'جديد', contacted: 'تواصلنا', test: 'تجربة قيادة', nego: 'تفاوض', won: 'تم البيع', lost: 'خسارة' };
+const LST = ['new', 'contacted', 'test', 'nego', 'won', 'lost'];
+const SOURCES = ['انستغرام', 'فيسبوك', 'تيك توك', 'واتساب', 'موقع المعرض', 'زيارة للمعرض', 'إحالة', 'أخرى'];
+const CATS = ['دفعة بيع', 'عربون', 'شراء سيارة', 'شحن', 'جمارك', 'تجهيز وصيانة', 'إعلان وتسويق', 'رواتب', 'إيجار', 'أخرى'];
+const PHOTO_GOAL = 15;
+
+/* ---------- مساعدات عامة ---------- */
+const $ = s => document.querySelector(s);
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const todayStr = () => new Date().toLocaleDateString('en-CA');
+const daysSince = d => Math.floor((new Date(todayStr() + 'T00:00:00').getTime() - new Date(d + 'T00:00:00').getTime()) / 864e5);
+const newId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+const strip = o => { const r = {}; for (const k in o) if (k !== 'id') r[k] = o[k]; return r; };
+const sum = (a, f) => a.reduce((s, x) => s + (+f(x) || 0), 0);
+const carById = id => S.cars.find(c => c.id === id);
+const carName = c => ((c.make || '') + ' ' + (c.model || '') + (c.trim ? ' ' + c.trim : '')).trim() || 'سيارة';
+function toast(m) { const t = $('#toast'); if (!t) return; t.textContent = m; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, 3400); }
+
+/* ---------- العملة: كل الأرقام مخزّنة بعملة الأساس، والعرض قد يكون بالعملة الأخرى بسعر صرف يحدده المالك ---------- */
+function rateOf(c) { return c === 'LYD' ? 1 : c === 'USD' ? (+S.set.usdRate || 0) : c === 'EUR' ? (+S.set.eurRate || 0) : 0; }
+function canConv(from, to) { return from === to || (rateOf(from) > 0 && rateOf(to) > 0); }
+function rateOK() { return rateOf('USD') > 0 || rateOf('EUR') > 0; }
+function effCur() { return canConv(S.set.baseCur, S.set.displayCur) ? S.set.displayCur : S.set.baseCur; }
+function conv(n, from, to) {
+  from = from || S.set.baseCur; to = to || S.set.displayCur;
+  if (from === to || !canConv(from, to)) return n;
+  return n * rateOf(from) / rateOf(to);
+}
+function fmt(n, cur) {
+  const v = Math.round(n), s = Math.abs(v).toLocaleString('en-US'), neg = v < 0 ? '-' : '';
+  return (cur === 'USD' || cur === 'EUR') ? neg + CUR[cur] + s : neg + s + ' ' + (CUR[cur] || cur);
+}
+// يعرض مبلغًا مخزّنًا بعملة الأساس بعملة العرض الحالية
+function money(n) {
+  n = +n || 0;
+  const to = effCur();
+  return fmt(conv(n, S.set.baseCur, to), to);
+}
+const moneyBoth = n => { const b = S.set.baseCur, l = ['USD', 'LYD', 'EUR'].filter(c => canConv(b, c)); return l.length > 1 ? l.map(c => fmt(conv(n, b, c), c)).join(' · ') : money(n); };
+
+/* ---------- حسابات السيارة ---------- */
+const cost = c => (+c.buyPrice || 0) + (+c.shipCost || 0) + (+c.customsCost || 0) + (+c.prepCost || 0);
+const inStock = c => STOCK.indexOf(c.status) > -1;
+const stockDays = c => (inStock(c) && c.arrivedAt) ? Math.max(0, daysSince(c.arrivedAt)) : null;
+// تكلفة الاحتفاظ التقديرية: نسبة شهرية من رأس المال المحبوس (تحدد في الإعدادات)
+const holdCost = c => { const d = stockDays(c); return d == null ? 0 : cost(c) * (+S.set.holdPct || 0) / 100 * d / 30; };
+// مراتب العمر بالنسبة لعتبة التنبيه: <50% حديثة، <100% تتابع، <150% متأخرة، بعدها حرجة
+function ageBand(d) {
+  const A = +S.set.agingDays || 60, r = d / A;
+  return r < .5 ? { k: 'fresh', l: 'حديثة', c: 'ok' } : r < 1 ? { k: 'watch', l: 'تُتابَع', c: 'info' } : r < 1.5 ? { k: 'late', l: 'متأخرة', c: 'warn' } : { k: 'crit', l: 'راكدة', c: 'crit' };
+}
+function paidFor(carId) { return sum(S.tx.filter(t => t.type === 'income' && t.carId === carId), t => t.amount); }
+function recv() {
+  return S.cars.filter(c => c.status === 'sold').map(c => { const paid = paidFor(c.id); return { car: c, paid, rest: (+c.soldPrice || 0) - paid }; }).filter(r => r.rest > 0);
+}
+const saleProfit = c => (+c.soldPrice || 0) - cost(c);
+const daysToSell = c => (c.soldDate && c.arrivedAt) ? Math.max(0, daysSince(c.arrivedAt) - daysSince(c.soldDate)) : null;
+function waLink(c, phone) {
+  const t = carName(c) + (c.year ? ' ' + c.year : '') + '\n' + (c.km ? 'الكيلومترات: ' + Number(c.km).toLocaleString('en-US') + '\n' : '') + (c.color ? 'اللون: ' + c.color + '\n' : '') + 'السعر: ' + money(c.askPrice) + '\nللحجز أو تجربة القيادة راسلنا هنا.';
+  const p = String(phone || S.set.whatsapp || '').replace(/\D/g, '');
+  return 'https://wa.me/' + p + '?text=' + encodeURIComponent(t);
+}
+
+/* ---------- سجل التغييرات ---------- */
+function audit(action, o) {
+  if (!ctx.db) return Promise.resolve();
+  return ctx.db.collection('audit').add(Object.assign({ ts: new Date().toISOString(), action }, o || {}));
+}
+
+/* ---------- التنبيهات ---------- */
+function alerts() {
+  const out = [], T = todayStr(), age = +S.set.agingDays || 60;
+  S.cars.forEach(c => {
+    const d = stockDays(c);
+    if (d != null && d >= age) out.push({ s: 'crit', t: carName(c) + ' بقيت ' + d + ' يومًا في المعرض', h: 'تكلفة احتفاظ تقديرية ' + money(holdCost(c)) + ' حتى الآن. قرّر السعر أو حملة عليها', a: 'open-car', id: c.id, b: 'افتح' });
+    if (TRANSIT.indexOf(c.status) > -1 && c.etaDate && c.etaDate < T) out.push({ s: 'warn', t: carName(c) + ' تأخر وصولها عن ' + c.etaDate, h: 'تابع مع شركة الشحن', a: 'go', k: 'shipping', b: 'الشحن' });
+    if (c.status === 'available' && !c.photosDone) out.push({ s: 'warn', t: carName(c) + ' جاهزة للبيع لكن صورها غير مكتملة', h: 'صوّرها قبل أن تنشر', a: 'open-car', id: c.id, b: 'افتح' });
+  });
+  S.leads.filter(l => l.stage !== 'won' && l.stage !== 'lost' && l.nextDate && l.nextDate < T).forEach(l => out.push({ s: 'warn', t: 'متابعة ' + l.name + ' متأخرة', h: l.nextAction || '', a: 'edit-lead', id: l.id, b: 'افتح' }));
+  S.requests.filter(r => !r.handled).forEach(r => out.push({ s: 'crit', t: 'طلب جديد من الموقع: ' + (r.name || ''), h: (r.carLabel || '') + (r.when ? ' · ' + r.when : ''), a: 'go', k: 'sales', b: 'الطلبات' }));
+  recv().forEach(r => out.push({ s: 'info', t: 'مستحق على ' + (r.car.buyer || 'المشتري') + ': ' + money(r.rest), h: carName(r.car), a: 'pay', id: r.car.id, b: 'سجّل دفعة' }));
+  const rank = { crit: 0, warn: 1, info: 2 };
+  return out.sort((a, b) => rank[a.s] - rank[b.s]);
+}
+
+/* ---------- تصدير CSV (BOM ليفتح العربي سليمًا في Excel) ---------- */
+function csv(rows) {
+  const q = v => { v = v == null ? '' : String(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  return '﻿' + rows.map(r => r.map(q).join(',')).join('\r\n');
+}
+function download(name, text, type) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type || 'text/csv;charset=utf-8' }));
+  a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ---------- تحميل البيانات وربطها بالحالة ---------- */
+function bind(db, onChange) {
+  ctx.db = db;
+  const sub = (n, k) => db.collection(n).onSnapshot(s => { S[k] = s.docs.map(d => Object.assign({ id: d.id }, d.data())); onChange(); }, () => toast('تعذّر تحميل ' + n));
+  sub('cars', 'cars'); sub('leads', 'leads'); sub('tx', 'tx'); sub('ideas', 'ideas'); sub('web', 'web'); sub('audit', 'audit'); sub('requests', 'requests');
+  db.doc('settings/main').onSnapshot(s => {
+    if (s.exists) {
+      const d = s.data(), m = Object.assign({}, DEFAULT_SET, d);
+      if (d.currency && !d.baseCur) m.baseCur = m.displayCur = d.currency === 'LYD' ? 'LYD' : 'USD'; // ترحيل إعدادات النموذج الأولي
+      if (!CUR[m.baseCur]) m.baseCur = 'USD'; if (!CUR[m.displayCur]) m.displayCur = m.baseCur;
+      S.set = m;
+    }
+    onChange();
+  });
+}
+
+exports.S = S;
+exports.DEFAULT_SET = DEFAULT_SET;
+exports.ctx = ctx;
+exports.CUR = CUR;
+exports.CS = CS;
+exports.CSC = CSC;
+exports.TRANSIT = TRANSIT;
+exports.STOCK = STOCK;
+exports.LS = LS;
+exports.LST = LST;
+exports.SOURCES = SOURCES;
+exports.CATS = CATS;
+exports.PHOTO_GOAL = PHOTO_GOAL;
+exports.$ = $;
+exports.esc = esc;
+exports.todayStr = todayStr;
+exports.daysSince = daysSince;
+exports.newId = newId;
+exports.strip = strip;
+exports.sum = sum;
+exports.carById = carById;
+exports.carName = carName;
+exports.toast = toast;
+exports.rateOK = rateOK;
+exports.rateOf = rateOf;
+exports.canConv = canConv;
+exports.effCur = effCur;
+exports.conv = conv;
+exports.fmt = fmt;
+exports.money = money;
+exports.moneyBoth = moneyBoth;
+exports.cost = cost;
+exports.inStock = inStock;
+exports.stockDays = stockDays;
+exports.holdCost = holdCost;
+exports.ageBand = ageBand;
+exports.paidFor = paidFor;
+exports.recv = recv;
+exports.saleProfit = saleProfit;
+exports.daysToSell = daysToSell;
+exports.waLink = waLink;
+exports.audit = audit;
+exports.alerts = alerts;
+exports.csv = csv;
+exports.download = download;
+exports.bind = bind;
+};
+
+__mods["js/photos.js"] = function (exports, __req) {
+// صور السيارات: تُضغط في المتصفح ثم تُخزَّن في IndexedDB (وتنتقل إلى Supabase Storage لاحقًا بنفس الواجهة).
+const DBN = 'sr2-photos', ST = 'p';
+let dbp = null;
+function open() {
+  if (dbp) return dbp;
+  dbp = new Promise((res, rej) => {
+    const r = indexedDB.open(DBN, 1);
+    r.onupgradeneeded = () => { const s = r.result.createObjectStore(ST, { keyPath: 'id' }); s.createIndex('carId', 'carId'); };
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  return dbp;
+}
+const tx = (mode, fn) => open().then(db => new Promise((res, rej) => {
+  const t = db.transaction(ST, mode), s = t.objectStore(ST); let out;
+  Promise.resolve(fn(s)).then(v => { out = v; });
+  t.oncomplete = () => res(out); t.onerror = () => rej(t.error);
+}));
+const req = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+
+const MAX_SIDE = 1600;
+const MAX_PER_CAR = 24;
+
+// يصغّر الصورة إلى 1600px كحد أقصى ويحوّلها إلى WebP/JPEG بجودة 0.82
+async function compress(file) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, MAX_SIDE / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(bmp, 0, 0, w, h);
+  const blob = await new Promise(r => c.toBlob(r, 'image/webp', 0.82));
+  return blob && blob.type === 'image/webp' ? blob : await new Promise(r => c.toBlob(r, 'image/jpeg', 0.82));
+}
+async function addPhoto(carId, blob) {
+  const list = await listPhotos(carId);
+  if (list.length >= MAX_PER_CAR) throw new Error('الحد الأقصى ' + MAX_PER_CAR + ' صورة لكل سيارة');
+  const order = list.length ? Math.max.apply(null, list.map(p => p.order)) + 1 : 0;
+  const id = carId + '/' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  await tx('readwrite', s => req(s.put({ id, carId, order, blob, size: blob.size })));
+  return id;
+}
+async function listPhotos(carId) {
+  const a = await tx('readonly', s => req(s.index('carId').getAll(carId)));
+  return (a || []).sort((x, y) => x.order - y.order);
+}
+async function removePhoto(id) { await tx('readwrite', s => req(s.delete(id))); }
+async function makeCover(carId, id) {
+  const list = await listPhotos(carId), first = list.length ? list[0].order : 0;
+  const p = list.find(x => x.id === id); if (!p) return;
+  p.order = first - 1;
+  await tx('readwrite', s => req(s.put(p)));
+}
+async function removeAllFor(carId) { const l = await listPhotos(carId); for (const p of l) await removePhoto(p.id); }
+async function coverURL(carId) { const l = await listPhotos(carId); return l.length ? URL.createObjectURL(l[0].blob) : null; }
+async function urls(carId) { const l = await listPhotos(carId); return l.map(p => ({ id: p.id, url: URL.createObjectURL(p.blob) })); }
+
+exports.MAX_SIDE = MAX_SIDE;
+exports.MAX_PER_CAR = MAX_PER_CAR;
+exports.compress = compress;
+exports.addPhoto = addPhoto;
+exports.listPhotos = listPhotos;
+exports.removePhoto = removePhoto;
+exports.makeCover = makeCover;
+exports.removeAllFor = removeAllFor;
+exports.coverURL = coverURL;
+exports.urls = urls;
+};
+
+__mods["js/adapters/local.js"] = function (exports, __req) {
+// قاعدة بيانات محلية (localStorage) بنفس واجهة claude.use('db') المستخدمة في النموذج الأولي:
+//   db.doc('cars/c1').get|set|update|delete|onSnapshot
+//   db.collection('cars').onSnapshot|add|doc(id)
+// تتزامن بين تبويبات المتصفح (حدث storage). الصور في IndexedDB (photos.js).
+// عند الانتقال إلى Supabase يُستبدل هذا الملف فقط (adapters/supabase.js) دون لمس بقية الكود.
+function createLocalDB(prefix) {
+  prefix = prefix || 'sr2';
+  const key = c => prefix + ':' + c;
+  const subs = [];
+  const read = c => { try { return JSON.parse(localStorage.getItem(key(c)) || '{}'); } catch (e) { return {}; } };
+  const write = (c, o) => localStorage.setItem(key(c), JSON.stringify(o));
+  const snapDoc = (c, id, all) => { const d = (all || read(c))[id]; return { id, exists: d !== undefined, data: () => d }; };
+  const snapCol = c => { const all = read(c); return { docs: Object.keys(all).map(id => snapDoc(c, id, all)), size: Object.keys(all).length }; };
+  const notify = c => subs.forEach(s => { if (s.col === c) s.fire(); });
+  window.addEventListener('storage', e => { if (e.key && e.key.indexOf(prefix + ':') === 0) notify(e.key.slice(prefix.length + 1)); });
+  const clone = v => JSON.parse(JSON.stringify(v));
+  const newId = () => 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+  function docRef(path) {
+    const [col, id] = path.split('/');
+    return {
+      id, path,
+      get: async () => snapDoc(col, id),
+      set: async v => { const a = read(col); a[id] = clone(v); write(col, a); notify(col); },
+      update: async v => {
+        const a = read(col); if (!a[id]) throw new Error('المستند غير موجود: ' + path);
+        Object.keys(v).forEach(k => { if (v[k] === null || v[k] === undefined) delete a[id][k]; else a[id][k] = clone(v[k]); });
+        write(col, a); notify(col);
+      },
+      delete: async () => { const a = read(col); delete a[id]; write(col, a); notify(col); },
+      onSnapshot: fn => { const s = { col, fire: () => fn(snapDoc(col, id)) }; subs.push(s); setTimeout(s.fire, 0); return () => subs.splice(subs.indexOf(s), 1); }
+    };
+  }
+  function colRef(col) {
+    return {
+      onSnapshot: fn => { const s = { col, fire: () => fn(snapCol(col)) }; subs.push(s); setTimeout(s.fire, 0); return () => subs.splice(subs.indexOf(s), 1); },
+      add: async v => { const id = newId(); await docRef(col + '/' + id).set(v); return docRef(col + '/' + id); },
+      doc: id => docRef(col + '/' + id),
+      // قراءة لمرة واحدة (للصفحة العامة والتصدير)
+      getAll: async () => snapCol(col).docs.map(d => Object.assign({ id: d.id }, d.data()))
+    };
+  }
+  return {
+    kind: 'local',
+    doc: docRef,
+    collection: colRef,
+    isEmpty: () => !localStorage.getItem(key('cars')) && !localStorage.getItem(key('settings')),
+    // نسخة احتياطية كاملة / استعادة (JSON)
+    exportAll: () => { const o = {}; ['cars', 'leads', 'tx', 'ideas', 'web', 'settings', 'audit', 'requests'].forEach(c => o[c] = read(c)); return o; },
+    importAll: obj => { Object.keys(obj).forEach(c => { write(c, obj[c]); notify(c); }); },
+    seed: obj => { Object.keys(obj).forEach(c => { write(c, obj[c]); notify(c); }); }
+  };
+}
+
+exports.createLocalDB = createLocalDB;
+};
+
+__mods["catalog/catalog.js"] = function (exports, __req) {
+// الموقع العام: كتالوج بفلاتر + صفحة لكل سيارة + طلب تجربة قيادة.
+// يقرأ الحقول العامة فقط عبر pub() ولا يشترك في العملاء أو القيود أو السجل.
+const C = __req("js/core.js");
+const { createLocalDB } = __req("js/adapters/local.js");
+const P = __req("js/photos.js");
+const { S, $, esc, carName, money, toast } = C;
+
+const db = createLocalDB('sr2');
+const PUBLIC_FIELDS = ['make', 'model', 'trim', 'year', 'color', 'km', 'engine', 'fuel', 'gearbox', 'origin', 'askPrice', 'features', 'notes', 'reportDone', 'photoCount', 'status', 'sample', 'arrivedAt'];
+const pub = c => { const o = { id: c.id }; PUBLIC_FIELDS.forEach(k => { if (c[k] !== undefined) o[k] = c[k]; }); return o; }; // لا تكلفة ولا ملاحظة داخلية ولا مشتري
+let cars = [], set = S.set;
+const F = { q: '', make: '', gear: '', fuel: '', maxPrice: '', minYear: '', sort: 'new' };
+const cover = {};
+
+const live = () => cars.filter(c => c.status === 'available' || c.status === 'reserved');
+const num = n => Number(n).toLocaleString('en-US');
+const wa = (c) => {
+  const p = String(set.whatsapp || '').replace(/\D/g, '');
+  const t = c ? carName(c) + (c.year ? ' ' + c.year : '') + '\nالسعر المعروض: ' + money(c.askPrice) + '\nأرغب بمعرفة المزيد عن هذه السيارة.' : 'مرحبًا، أرغب بالاستفسار عن سياراتكم.';
+  return p ? 'https://wa.me/' + p + '?text=' + encodeURIComponent(t) : '';
+};
+function setMeta(title, desc) { document.title = title; const m = document.querySelector('meta[name=description]'); if (m && desc) m.setAttribute('content', desc); }
+
+function priceBoth(n) { return C.rateOK() ? '<div class="alt">' + esc(C.moneyBoth(n).split(' · ').filter(x => x !== money(n)).join(' · ')) + '</div>' : ''; }
+
+/* ---------- القائمة ---------- */
+function list() {
+  const L = live(), makes = [...new Set(L.map(c => c.make).filter(Boolean))].sort();
+  const q = F.q.trim().toLowerCase();
+  let r = L.filter(c => (!F.make || c.make === F.make) && (!F.gear || c.gearbox === F.gear) && (!F.fuel || c.fuel === F.fuel)
+    && (!F.maxPrice || (+c.askPrice || 0) <= C.conv(+F.maxPrice, (C.canConv(set.baseCur, set.displayCur) ? set.displayCur : set.baseCur), set.baseCur)) && (!F.minYear || (+c.year || 0) >= +F.minYear)
+    && (!q || (carName(c) + ' ' + (c.color || '') + ' ' + (c.year || '')).toLowerCase().indexOf(q) > -1));
+  r.sort((a, b) => F.sort === 'pa' ? a.askPrice - b.askPrice : F.sort === 'pd' ? b.askPrice - a.askPrice : F.sort === 'yr' ? (b.year || 0) - (a.year || 0) : (b.arrivedAt || '').localeCompare(a.arrivedAt || ''));
+  const sel = (id, l, opts, v) => '<div class="field"><label for="' + id + '">' + l + '</label><select id="' + id + '"><option value="">الكل</option>' + opts.map(o => '<option' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select></div>';
+  const cur = (C.canConv(set.baseCur, set.displayCur) ? set.displayCur : set.baseCur);
+  let h = '<section class="hero"><h1>سيارات جاهزة للتسليم</h1><p>كل سيارة بصورها ومواصفاتها وسعرها الواضح. تواصل معنا مباشرة أو احجز تجربة قيادة.</p></section>';
+  h += '<div class="fbar" role="search" aria-label="تصفية السيارات"><div class="field"><label for="fq">بحث</label><input id="fq" type="search" value="' + esc(F.q) + '" placeholder="ماركة، موديل، لون"></div>'
+    + sel('fmake', 'الماركة', makes, F.make) + sel('fgear', 'ناقل الحركة', ['أوتوماتيك', 'يدوي'], F.gear) + sel('ffuel', 'الوقود', ['بنزين', 'ديزل', 'هجين', 'كهرباء'], F.fuel)
+    + '<div class="field"><label for="fyear">من سنة</label><input id="fyear" type="number" inputmode="numeric" value="' + esc(F.minYear) + '" placeholder="2020"></div>'
+    + '<div class="field"><label for="fprice">أقصى سعر (' + esc(cur) + ')</label><input id="fprice" type="number" inputmode="numeric" value="' + esc(F.maxPrice) + '"></div>'
+    + '<div class="field"><label for="fsort">الترتيب</label><select id="fsort">' + [['new', 'الأحدث وصولًا'], ['pa', 'السعر: الأقل'], ['pd', 'السعر: الأعلى'], ['yr', 'سنة الصنع']].map(o => '<option value="' + o[0] + '"' + (F.sort === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></div></div>';
+  h += '<div class="rcount"><span><b class="num">' + r.length + '</b> سيارة</span></div>';
+  h += r.length ? '<div class="grid">' + r.map(c => '<a class="card" href="#/car/' + esc(c.id) + '"><div class="im" data-cover="' + esc(c.id) + '" data-n="' + (c.photoCount || 0) + '">' + (c.photoCount ? '' : 'الصور قريبًا') + '<span class="tag">' + (c.status === 'reserved' ? '<span class="badge warn">محجوزة</span>' : '') + (c.reportDone ? '<span class="badge ok">تقرير فحص</span>' : '') + '</span></div><div class="bd"><div class="nm">' + esc(carName(c)) + '</div><div class="sp">' + [c.year, c.km ? num(c.km) + ' كم' : '', c.gearbox, c.fuel, c.color].filter(Boolean).map(x => '<span>' + esc(x) + '</span>').join('') + '</div><div class="pr">' + esc(money(c.askPrice)) + '</div></div></a>').join('') + '</div>'
+    : '<div class="empty">لا توجد سيارات مطابقة. جرّب تخفيف الفلاتر' + (wa() ? ' أو <a href="' + wa() + '" target="_blank" rel="noopener">اسألنا عن سيارة محددة</a>' : '') + '.</div>';
+  setMeta((set.name || 'سيارات المعرض') + ' | سيارات جاهزة للبيع', 'تصفح ' + r.length + ' سيارة جاهزة للتسليم مع الأسعار والمواصفات.');
+  return h;
+}
+
+/* ---------- صفحة السيارة ---------- */
+function detail(id) {
+  const c = cars.find(x => x.id === id);
+  if (!c || (c.status !== 'available' && c.status !== 'reserved')) return '<div class="crumb"><a href="#/">كل السيارات</a></div><div class="empty">هذه السيارة لم تعد معروضة. <a href="#/">تصفّح السيارات المتاحة</a></div>';
+  const rows = [['سنة الصنع', c.year], ['الكيلومترات', c.km ? num(c.km) + ' كم' : ''], ['اللون', c.color], ['المحرك', c.engine], ['الوقود', c.fuel], ['ناقل الحركة', c.gearbox], ['بلد المنشأ', c.origin]].filter(r => r[1]);
+  const feats = String(c.features || '').split(/[,،]/).map(s => s.trim()).filter(Boolean);
+  const link = wa(c);
+  setMeta(carName(c) + (c.year ? ' ' + c.year : '') + ' | ' + (set.name || 'المعرض'), [c.year, c.km ? num(c.km) + ' كم' : '', c.gearbox, c.fuel].filter(Boolean).join(' · '));
+  let h = '<div class="crumb"><a href="#/">كل السيارات</a> / ' + esc(carName(c)) + '</div><div class="det"><div><div class="gal"><div class="main" id="gmain" data-id="' + esc(c.id) + '">' + (c.photoCount ? '' : 'الصور قريبًا') + '</div><div class="ths" id="gths"></div></div>';
+  h += '<div class="box" style="margin-top:16px"><h2>المواصفات</h2><table class="specs"><tbody>' + rows.map(r => '<tr><th>' + esc(r[0]) + '</th><td>' + esc(r[1]) + '</td></tr>').join('') + '</tbody></table></div>';
+  if (feats.length) h += '<div class="box" style="margin-top:16px"><h2>الكماليات</h2><div class="feat">' + feats.map(f => '<span class="pill">' + esc(f) + '</span>').join('') + '</div></div>';
+  if (c.notes) h += '<div class="box" style="margin-top:16px"><h2>حالة السيارة</h2><p style="margin:0">' + esc(c.notes) + '</p><p class="hint">هذه الحالة كما أعلنها المعرض. يُنصح بمعاينة السيارة وفحصها قبل الشراء.</p></div>';
+  h += '</div><aside class="side"><div class="box"><h1>' + esc(carName(c)) + '</h1><div class="mut">' + esc([c.year, c.color].filter(Boolean).join(' · ')) + '</div>' + (c.status === 'reserved' ? '<p><span class="badge warn">محجوزة حاليًا</span></p>' : '') + (c.reportDone ? '<p><span class="badge ok">تقرير فحص متوفر</span></p>' : '') + '<div class="pr">' + esc(money(c.askPrice)) + '</div>' + priceBoth(c.askPrice) + '<div class="ctas">' + (link ? '<a class="btn primary" href="' + link + '" target="_blank" rel="noopener">راسلنا على واتساب</a>' : '') + '</div></div>';
+  h += '<form class="box form" id="reqf" novalidate><h2>احجز تجربة قيادة</h2><p class="hint" style="margin:0">اترك بياناتك وسنتواصل معك لتأكيد الموعد. الطلب لا يعني الحجز.</p>'
+    + '<div class="field"><label for="rn">الاسم</label><input id="rn" autocomplete="name" required></div><div class="field"><label for="rp">رقم الهاتف</label><input id="rp" type="tel" inputmode="tel" autocomplete="tel" required dir="ltr"></div><div class="field"><label for="rw">الوقت المناسب لك</label><input id="rw" placeholder="مثال: غدًا بعد العصر"></div>'
+    + '<div class="hp" aria-hidden="true"><label>لا تملأ هذا الحقل<input id="rh" tabindex="-1" autocomplete="off"></label></div>'
+    + '<button class="btn primary" type="submit" style="justify-content:center;min-height:44px">أرسل الطلب</button><div id="rmsg" class="hint" role="status"></div></form></aside></div>';
+  return h;
+}
+
+/* ---------- الرسم والأحداث ---------- */
+async function fillCovers() {
+  for (const el of document.querySelectorAll('[data-cover]')) {
+    if (!+el.dataset.n) continue; const k = el.dataset.cover + ':' + el.dataset.n;
+    if (!cover[k]) cover[k] = await P.coverURL(el.dataset.cover);
+    if (cover[k]) { el.style.backgroundImage = 'url("' + cover[k] + '")'; el.classList.add('has'); }
+  }
+}
+async function fillGallery() {
+  const m = $('#gmain'); if (!m || !+((cars.find(c => c.id === m.dataset.id) || {}).photoCount)) return;
+  const ph = await P.urls(m.dataset.id); if (!ph.length) return;
+  const show = i => { m.innerHTML = '<img src="' + ph[i].url + '" alt="' + esc(carName(cars.find(c => c.id === m.dataset.id))) + ' صورة ' + (i + 1) + '">'; [].forEach.call($('#gths').children, (b, j) => b.setAttribute('aria-current', j === i)); };
+  $('#gths').innerHTML = ph.map((p, i) => '<button type="button" data-i="' + i + '" aria-label="الصورة ' + (i + 1) + '"><img src="' + p.url + '" alt=""></button>').join('');
+  $('#gths').onclick = e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); };
+  show(0);
+}
+function render() {
+  const h = location.hash.match(/^#\/car\/(.+)$/), keep = document.activeElement && document.activeElement.id, ss = document.activeElement && document.activeElement.selectionStart;
+  $('#main').innerHTML = h ? detail(decodeURIComponent(h[1])) : list();
+  $('#logo').textContent = set.name || 'سيارات المعرض'; $('#foot').textContent = [set.name, set.city].filter(Boolean).join(' · ');
+  const top = $('#waTop'), l = wa(); if (l) { top.href = l; top.hidden = false; } else top.hidden = true;
+  $('#curBox').innerHTML = C.rateOK() ? Object.keys(C.CUR).filter(k => C.canConv(set.baseCur, k)).map(k => '<button class="btn sm" data-cur="' + k + '" aria-pressed="' + ((C.canConv(set.baseCur, set.displayCur) ? set.displayCur : set.baseCur) === k) + '">' + k + '</button>').join('') : '';
+  $('#sampleBar').hidden = !cars.some(c => c.sample);
+  if (keep) { const n = document.getElementById(keep); if (n) { n.focus(); try { n.setSelectionRange(ss, ss); } catch (e) { /* ليس نصًا */ } } }
+  fillCovers(); fillGallery();
+}
+let q = 0; const sched = () => { if (!q) q = requestAnimationFrame(() => { q = 0; render(); }); };
+window.addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); });
+document.addEventListener('input', e => {
+  const m = { fq: 'q', fyear: 'minYear', fprice: 'maxPrice' }[e.target.id]; if (m) { F[m] = e.target.value; sched(); }
+});
+document.addEventListener('change', e => {
+  const m = { fmake: 'make', fgear: 'gear', ffuel: 'fuel', fsort: 'sort' }[e.target.id]; if (m) { F[m] = e.target.value; sched(); }
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-cur]'); if (b) { set = Object.assign({}, set, { displayCur: b.dataset.cur }); C.S.set = set; render(); }
+});
+document.addEventListener('submit', async e => {
+  if (e.target.id !== 'reqf') return; e.preventDefault();
+  const id = (location.hash.match(/^#\/car\/(.+)$/) || [])[1], c = cars.find(x => x.id === decodeURIComponent(id || '')), msg = $('#rmsg');
+  const name = $('#rn').value.trim(), phone = $('#rp').value.trim(), when = $('#rw').value.trim();
+  if ($('#rh').value) return; // فخ للروبوتات
+  if (name.length < 2) { msg.textContent = 'اكتب اسمك من فضلك'; $('#rn').focus(); return; }
+  if (phone.replace(/\D/g, '').length < 8) { msg.textContent = 'رقم الهاتف غير صحيح'; $('#rp').focus(); return; }
+  let last = 0; try { last = +localStorage.getItem('sr_req_ts') || 0; } catch (x) { /* تجاهل */ }
+  if (Date.now() - last < 30000) { msg.textContent = 'أُرسل طلب قبل قليل. انتظر لحظات ثم حاول مجددًا'; return; }
+  try {
+    await db.collection('requests').add({ name: name.slice(0, 80), phone: phone.slice(0, 30), when: when.slice(0, 80), carId: c ? c.id : null, carLabel: c ? carName(c) + ' ' + (c.year || '') : '', ts: new Date().toISOString(), handled: false });
+    try { localStorage.setItem('sr_req_ts', String(Date.now())); } catch (x) { /* تجاهل */ }
+    e.target.innerHTML = '<h2>وصل طلبك</h2><p>شكرًا ' + esc(name) + '. سنتواصل معك على ' + esc(phone) + ' لتأكيد موعد تجربة القيادة.</p>';
+  } catch (x) { msg.textContent = 'تعذّر إرسال الطلب. راسلنا على واتساب'; }
+});
+
+db.collection('cars').onSnapshot(s => { cars = s.docs.map(d => pub(Object.assign({ id: d.id }, d.data()))); sched(); });
+db.doc('settings/main').onSnapshot(s => { if (s.exists) { const d = s.data(); set = Object.assign({}, C.DEFAULT_SET, d); if (d.currency && !d.baseCur) set.baseCur = set.displayCur = d.currency === 'LYD' ? 'LYD' : 'USD'; C.S.set = set; } sched(); });
+render();
+
+
+};
+
+__req("catalog/catalog.js");
+})();
+</script>
+</body>
+</html>
