@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makine Parkı Bakım Sistemi</title>
+<style>
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --surface-2:#f8fafc; --border:#e3e8ef; --border-2:#cfd7e2;
+  --text:#18212f; --muted:#5f6b7c; --faint:#8b96a6;
+  --brand:#1f3a5f; --brand-2:#284b78; --accent:#e8892b; --accent-soft:#fdf0e1;
+  --ok:#1f8a5b; --ok-soft:#e3f4ec; --warn:#b7791f; --warn-soft:#fdf3dc; --bad:#c2410c; --bad-2:#b42318; --bad-soft:#fde8e4;
+  --info:#2563eb; --info-soft:#e6eefc;
+  --c1:#2f6fb3; --c2:#e8892b; --c3:#2a9d8f; --c4:#8e5bb5; --c5:#c4485a;
+  --sidebar:#152a45; --sidebar-text:#c9d4e3; --sidebar-active:#23426b;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f141b; --surface:#171e28; --surface-2:#1c2430; --border:#273242; --border-2:#33415a;
+    --text:#e6ebf2; --muted:#a3afc0; --faint:#77839a;
+    --brand:#9cc3f0; --brand-2:#7fb0e8; --accent:#f0a052; --accent-soft:#3a2a18;
+    --ok:#4cc38a; --ok-soft:#173527; --warn:#e8b14f; --warn-soft:#3a2f17; --bad:#f2785c; --bad-2:#f2785c; --bad-soft:#3d1f1a;
+    --info:#7aa7f5; --info-soft:#1b2a45;
+    --c1:#5b9bdc; --c2:#f0a052; --c3:#4fbfb1; --c4:#b18ad6; --c5:#e27587;
+    --sidebar:#0b1622; --sidebar-text:#b9c6d8; --sidebar-active:#1d3350;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#0f141b; --surface:#171e28; --surface-2:#1c2430; --border:#273242; --border-2:#33415a;
+    --text:#e6ebf2; --muted:#a3afc0; --faint:#77839a;
+    --brand:#9cc3f0; --brand-2:#7fb0e8; --accent:#f0a052; --accent-soft:#3a2a18;
+    --ok:#4cc38a; --ok-soft:#173527; --warn:#e8b14f; --warn-soft:#3a2f17; --bad:#f2785c; --bad-2:#f2785c; --bad-soft:#3d1f1a;
+    --info:#7aa7f5; --info-soft:#1b2a45;
+    --c1:#5b9bdc; --c2:#f0a052; --c3:#4fbfb1; --c4:#b18ad6; --c5:#e27587;
+    --sidebar:#0b1622; --sidebar-text:#b9c6d8; --sidebar-active:#1d3350;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--info)}
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+/* Sidebar */
+.sidebar{background:var(--sidebar);color:var(--sidebar-text);padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px}
+.brand-logo{width:36px;height:36px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#1b1206;font-weight:800;flex:none}
+.brand-name{font-weight:700;color:#fff;font-size:14px;line-height:1.2}
+.brand-sub{font-size:11px;opacity:.7}
+.nav-sec{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;padding:12px 10px 4px}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:inherit;padding:8px 10px;border-radius:7px;cursor:pointer;font-size:13.5px}
+.nav-btn:hover{background:rgba(255,255,255,.06)}
+.nav-btn.active{background:var(--sidebar-active);color:#fff;font-weight:600}
+.nav-btn .ico{width:18px;text-align:center;opacity:.9}
+.nav-btn .cnt{margin-left:auto;background:var(--bad-2);color:#fff;border-radius:10px;font-size:11px;padding:0 7px;font-weight:700}
+.sidebar-foot{margin-top:auto;font-size:11px;opacity:.6;padding:10px}
+/* Main */
+main{min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);padding:10px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar h1{font-size:18px;margin:0;font-weight:700;letter-spacing:-.01em}
+.topbar .sp{flex:1}
+.ctl{display:flex;flex-direction:column;gap:2px}
+.ctl label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+select,input,textarea{background:var(--surface);border:1px solid var(--border-2);border-radius:7px;padding:7px 9px;min-height:34px}
+select:focus,input:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(--info) 40%,transparent);outline-offset:0;border-color:var(--info)}
+.btn{background:var(--surface);border:1px solid var(--border-2);border-radius:7px;padding:7px 13px;cursor:pointer;font-weight:600;font-size:13px;white-space:nowrap;min-height:34px}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0f141b}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0f141b}}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#1b1206}
+.btn.sm{padding:3px 9px;font-size:12px;min-height:26px}
+.btn.ghost{border-color:transparent;background:transparent}
+.scope-banner{margin:14px 22px 0;padding:10px 14px;border-radius:9px;display:flex;gap:10px;align-items:center;font-size:13px;border:1px solid}
+.scope-banner.mgr{background:var(--info-soft);border-color:color-mix(in srgb,var(--info) 30%,transparent)}
+.scope-banner.stf{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.view{padding:18px 22px 40px;display:flex;flex-direction:column;gap:18px}
+/* Cards */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g32{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0}
+.card-h{padding:13px 16px 0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card-h h3{margin:0;font-size:14.5px;font-weight:700}
+.card-h .sub{color:var(--muted);font-size:12px}
+.card-h .r{margin-left:auto}
+.card-b{padding:12px 16px 16px}
+.kpi{padding:14px 16px}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:13px;color:var(--muted);font-weight:600;margin-left:3px}
+.kpi .s{font-size:11.5px;color:var(--faint);margin-top:2px}
+.kpi.alert .v{color:var(--bad-2)}
+/* Tables */
+.tbl-wrap{overflow:auto;max-height:560px;border-top:1px solid var(--border)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surface-2);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;z-index:1}
+th[data-sort]{cursor:pointer;user-select:none}
+th[data-sort]:hover{color:var(--text)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--surface-2)}
+tr.click{cursor:pointer}
+tfoot td{font-weight:700;background:var(--surface-2)}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;font-weight:600;color:var(--brand)}
+.muted{color:var(--muted)}
+.faint{color:var(--faint)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad-2)}
+.pill.info{background:var(--info-soft);color:var(--info)}
+.pill.neutral{background:var(--surface-2);color:var(--muted);border:1px solid var(--border)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:0 16px 12px}
+.toolbar input[type=search]{min-width:220px}
+/* Charts */
+.hbar{display:flex;flex-direction:column;gap:9px}
+.hbar-row{display:grid;grid-template-columns:minmax(90px,160px) 1fr auto;gap:10px;align-items:center;font-size:12.5px}
+.hbar-row .lb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-weight:600}
+.hbar-track{height:16px;background:var(--surface-2);border-radius:4px;overflow:hidden;display:flex}
+.hbar-fill{height:100%;border-radius:0 3px 3px 0}
+.hbar-row .vl{font-variant-numeric:tabular-nums;font-weight:700;min-width:80px;text-align:right}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.cols{display:flex;align-items:flex-end;gap:6px;height:190px;padding-top:16px;border-bottom:1px solid var(--border-2)}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0;position:relative}
+.col .bar{width:100%;max-width:38px;background:var(--c1);border-radius:3px 3px 0 0;min-height:1px}
+.col .bar:hover{filter:brightness(1.12)}
+.col .tv{font-size:10.5px;color:var(--muted);margin-bottom:3px;font-variant-numeric:tabular-nums}
+.cols-x{display:flex;gap:6px;margin-top:5px}
+.cols-x span{flex:1;text-align:center;font-size:10.5px;color:var(--faint);min-width:0;overflow:visible;white-space:nowrap}
+/* Alerts */
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.alert-item{display:grid;grid-template-columns:4px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 14px 10px 0;overflow:hidden;cursor:pointer}
+.alert-item:hover{border-color:var(--border-2)}
+.alert-item .stripe{align-self:stretch;margin:-10px 0}
+.alert-item.overdue .stripe{background:var(--bad-2)}
+.alert-item.soon .stripe{background:var(--warn)}
+.alert-item .t{font-weight:700}
+.alert-item .m{font-size:12px;color:var(--muted)}
+.alert-item .rt{text-align:right;font-size:12px}
+.meter{height:6px;background:var(--surface-2);border-radius:4px;overflow:hidden;width:120px;display:inline-block;vertical-align:middle}
+.meter i{display:block;height:100%}
+/* WhatsApp mock */
+.wa{background:#e5ddd5;border-radius:14px;padding:0;overflow:hidden;border:1px solid var(--border)}
+.wa-h{background:#075e54;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.wa-av{width:32px;height:32px;border-radius:50%;background:#25d366;display:grid;place-items:center;font-weight:800;color:#063}
+.wa-b{padding:14px;display:flex;flex-direction:column;gap:8px;min-height:200px}
+.wa-msg{background:#fff;color:#111;border-radius:8px;padding:8px 10px;font-size:12.5px;max-width:92%;box-shadow:0 1px 1px rgba(0,0,0,.1);white-space:pre-line}
+.wa-msg .tm{display:block;text-align:right;font-size:10px;color:#777;margin-top:3px}
+.note{font-size:12px;color:var(--muted);background:var(--surface-2);border:1px dashed var(--border-2);border-radius:8px;padding:10px 12px}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(10,18,30,.5);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+.modal-bg.hidden{display:none}
+.modal{background:var(--surface);border-radius:12px;width:min(1120px,100%);box-shadow:0 20px 50px rgba(0,0,0,.3);border:1px solid var(--border)}
+.modal.narrow{width:min(620px,100%)}
+.modal-h{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.modal-h h2{margin:0;font-size:16px}
+.modal-h .x{margin-left:auto}
+.modal-b{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.modal-f{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld.full{grid-column:1/-1}
+.fld label{font-size:12px;font-weight:600;color:var(--muted)}
+.fld .hint{font-size:11px;color:var(--faint)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{background:none;border:0;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:var(--text);border-color:var(--accent)}
+.info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.info-grid div{background:var(--surface-2);border-radius:8px;padding:8px 10px}
+.info-grid b{display:block;font-size:11px;color:var(--muted);font-weight:600}
+.calc{background:var(--info-soft);border-radius:8px;padding:10px 12px;font-size:13px}
+pre.ddl{background:#0f1720;color:#d6e2f0;border-radius:9px;padding:14px;overflow:auto;font-size:12px;line-height:1.5;max-height:520px;margin:0}
+.schema-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.schema-card{border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface)}
+.schema-card h4{margin:0;padding:8px 12px;background:var(--brand);color:#fff;font-size:13px;display:flex;justify-content:space-between}
+:root[data-theme="dark"] .schema-card h4{color:#0f141b}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .schema-card h4{color:#0f141b}}
+.schema-card table td{padding:4px 12px;font-size:12px}
+.schema-card .k{color:var(--accent);font-weight:700;font-size:10.5px}
+.toast{position:fixed;bottom:20px;right:20px;background:#13243b;color:#fff;padding:11px 16px;border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:200;font-size:13px;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.row-actions{display:flex;gap:6px}
+.mob-nav{display:none}
+@media (max-width:1100px){.g3{grid-template-columns:1fr 1fr}.info-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .mob-nav{display:block;width:100%}
+  .g2,.g3,.g32,.form-grid{grid-template-columns:1fr}
+  .topbar{position:static}
+  .topbar,.view{padding-left:16px;padding-right:16px}
+  .scope-banner{margin-left:16px;margin-right:16px}
+  .hbar-row{grid-template-columns:90px 1fr auto}
+  .toolbar input[type=search]{min-width:0;flex:1}
+}
+@media print{.sidebar,.topbar .ctl,.topbar .btn{display:none}.app{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main>
+    <div class="topbar">
+      <select class="mob-nav" id="mobNav" aria-label="Menü"></select>
+      <h1 id="pageTitle">Gösterge Paneli</h1>
+      <span class="sp"></span>
+      <div class="ctl"><label for="roleSel">Oturum (Demo Rol Seçimi)</label><select id="roleSel"></select></div>
+      <div class="ctl"><label for="periodSel">Dönem</label>
+        <select id="periodSel">
+          <option value="7">Son 7 gün</option>
+          <option value="30">Son 30 gün</option>
+          <option value="90">Son 90 gün</option>
+          <option value="all">Tüm kayıtlar</option>
+        </select></div>
+      <button class="btn accent" data-action="new-record">＋ Kayıt Ekle</button>
+    </div>
+    <div id="scopeBanner"></div>
+    <div class="view" id="view"></div>
+  </main>
+</div>
+<div class="modal-bg hidden" id="modalBg"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   MAKİNE PARKI BAKIM YÖNETİM SİSTEMİ — DEMO / PROTOTİP
+   ---------------------------------------------------------------------
+   • Tek dosya, harici bağımlılık yok, çevrimdışı çalışır.
+   • Veritabanı: aşağıdaki SCHEMA tanımına uyan tablolar (JS dizileri),
+     tarayıcının localStorage'ında saklanır.
+   • SCHEMA nesnesi, PostgreSQL DDL'sine otomatik dönüştürülür
+     ("Veri Modeli" ekranı) → gerçek veritabanına geçiş için temel.
+   ===================================================================== */
+
+/* ---------------------------- 1. ŞEMA ----------------------------- */
+const SCHEMA = {
+  branches: { desc:'Şubeler (5 sabit şube)', cols:[
+    ['id','SERIAL','PK'],['code','VARCHAR(5)','UNIQUE NOT NULL'],['name','VARCHAR(80)','NOT NULL'],
+    ['region','VARCHAR(60)','NOT NULL'],['city','VARCHAR(40)','NOT NULL']]},
+  users: { desc:'Kullanıcılar ve yetki seviyeleri', cols:[
+    ['id','SERIAL','PK'],['full_name','VARCHAR(80)','NOT NULL'],
+    ['role','VARCHAR(20)',"NOT NULL CHECK (role IN ('MUHENDIS','SUBE_PERSONELI'))"],
+    ['branch_id','INT','FK branches(id) — MUHENDIS için NULL'],['phone','VARCHAR(20)','WhatsApp bildirimleri için']]},
+  projects: { desc:'Projeler (her proje tek bir şubeye bağlı)', cols:[
+    ['id','SERIAL','PK'],['branch_id','INT','FK branches(id) NOT NULL'],['code','VARCHAR(20)','UNIQUE NOT NULL'],
+    ['name','VARCHAR(120)','NOT NULL'],['start_date','DATE',''],['status','VARCHAR(15)',"DEFAULT 'DEVAM'"]]},
+  machine_types: { desc:'Makine türleri ve varsayılan bakım periyotları', cols:[
+    ['id','SERIAL','PK'],['code','VARCHAR(5)','UNIQUE NOT NULL'],['name','VARCHAR(60)','NOT NULL'],
+    ['fuel_lph','NUMERIC(5,1)','Ortalama yakıt tüketimi L/saat'],['oil_capacity_l','NUMERIC(6,1)','Motor yağı kapasitesi'],
+    ['oil_interval_h','INT','Yağ değişim periyodu (saat)'],['oil_interval_d','INT','Yağ değişim periyodu (gün)']]},
+  machines: { desc:'Makineler — kod şirket içi üretilir; makine bir anda tek projeye aittir', cols:[
+    ['id','SERIAL','PK'],['code','VARCHAR(20)','UNIQUE NOT NULL — şirket iç kodu (örn. EKP-EKS-0007)'],
+    ['type_id','INT','FK machine_types(id) NOT NULL'],['project_id','INT','FK projects(id) NOT NULL — şube proje üzerinden'],
+    ['brand','VARCHAR(40)',''],['model','VARCHAR(40)',''],['model_year','SMALLINT',''],
+    ['initial_hour_meter','NUMERIC(9,1)','Sisteme girişteki saat sayacı'],
+    ['status','VARCHAR(12)',"CHECK (status IN ('AKTIF','ARIZALI','TRANSFERDE'))"]]},
+  fuel_logs: { desc:'Yakıt ikmal kayıtları', cols:[
+    ['id','BIGSERIAL','PK'],['machine_id','INT','FK machines(id) NOT NULL'],
+    ['branch_id','INT','FK branches(id) — kayıt anındaki şube'],['project_id','INT','FK projects(id) — kayıt anındaki proje'],
+    ['logged_at','TIMESTAMP','NOT NULL — tarih + saat'],['liters','NUMERIC(8,1)','NOT NULL CHECK (liters > 0)'],
+    ['unit_price','NUMERIC(8,2)','TL / litre'],['recorded_by','INT','FK users(id)']]},
+  oil_logs: { desc:'Yağ kayıtları (değişim veya ilave)', cols:[
+    ['id','BIGSERIAL','PK'],['machine_id','INT','FK machines(id) NOT NULL'],['branch_id','INT','FK branches(id)'],['project_id','INT','FK projects(id)'],
+    ['logged_at','TIMESTAMP','NOT NULL'],['operation','VARCHAR(10)',"CHECK (operation IN ('DEGISIM','ILAVE'))"],
+    ['oil_type','VARCHAR(40)',''],['liters','NUMERIC(8,1)','NOT NULL'],['hour_meter','NUMERIC(9,1)','İşlem anındaki saat sayacı'],
+    ['interval_h','INT','Periyot (saat) — yalnız DEGISIM'],['interval_d','INT','Periyot (gün) — yalnız DEGISIM'],
+    ['next_due_hours','NUMERIC(9,1)','Hesaplanan: hour_meter + interval_h'],['next_due_date','DATE','Hesaplanan: logged_at + interval_d'],
+    ['cost','NUMERIC(12,2)','TL'],['recorded_by','INT','FK users(id)']]},
+  filter_logs: { desc:'Filtre değişim kayıtları', cols:[
+    ['id','BIGSERIAL','PK'],['machine_id','INT','FK machines(id) NOT NULL'],['branch_id','INT','FK branches(id)'],['project_id','INT','FK projects(id)'],
+    ['filter_type','VARCHAR(30)',"NOT NULL (MOTOR_YAG, YAKIT, HAVA, HIDROLIK)"],['changed_at','TIMESTAMP','NOT NULL — son değişim'],
+    ['hour_meter','NUMERIC(9,1)','Değişim anındaki saat sayacı'],['interval_h','INT','NOT NULL — periyot (saat)'],['interval_d','INT','NOT NULL — periyot (gün)'],
+    ['next_due_hours','NUMERIC(9,1)','Hesaplanan'],['next_due_date','DATE','Hesaplanan'],['cost','NUMERIC(12,2)','TL'],['recorded_by','INT','FK users(id)']]},
+  operating_hours: { desc:'Günlük çalışma saatleri', cols:[
+    ['id','BIGSERIAL','PK'],['machine_id','INT','FK machines(id) NOT NULL'],['branch_id','INT','FK branches(id)'],['project_id','INT','FK projects(id)'],
+    ['work_date','DATE','NOT NULL'],['hours','NUMERIC(4,1)','CHECK (hours BETWEEN 0 AND 24)'],['recorded_by','INT','FK users(id)'],
+    ['','','UNIQUE (machine_id, work_date)']]},
+  breakdown_logs: { desc:'Arıza kayıtları', cols:[
+    ['id','BIGSERIAL','PK'],['machine_id','INT','FK machines(id) NOT NULL'],['branch_id','INT','FK branches(id)'],['project_id','INT','FK projects(id)'],
+    ['part','VARCHAR(60)','NOT NULL — arızalanan parça'],['cause','VARCHAR(60)','NOT NULL — arıza nedeni'],['description','TEXT',''],
+    ['occurred_at','TIMESTAMP','NOT NULL'],['part_last_replaced_at','DATE','Parçanın bir önceki değişim tarihi'],
+    ['downtime_hours','NUMERIC(7,1)','Fiili duruş süresi'],['cost','NUMERIC(12,2)','Parça + işçilik (TL)'],
+    ['status','VARCHAR(12)',"CHECK (status IN ('ACIK','GIDERILDI'))"],['resolved_at','TIMESTAMP',''],['recorded_by','INT','FK users(id)']]},
+  transfer_logs: { desc:'Şubeler / projeler arası makine transferi (çıkış → giriş)', cols:[
+    ['id','BIGSERIAL','PK'],['machine_id','INT','FK machines(id) NOT NULL'],
+    ['from_project_id','INT','FK projects(id)'],['from_branch_id','INT','FK branches(id)'],
+    ['to_project_id','INT','FK projects(id)'],['to_branch_id','INT','FK branches(id)'],
+    ['checkout_at','TIMESTAMP','NOT NULL — çıkış'],['checkout_by','INT','FK users(id)'],
+    ['checkin_at','TIMESTAMP','NULL = yolda'],['checkin_by','INT','FK users(id)'],['note','TEXT','']]},
+  notifications: { desc:'(Planlanan) WhatsApp bildirim kuyruğu — demoda kullanılmaz', cols:[
+    ['id','BIGSERIAL','PK'],['user_id','INT','FK users(id)'],['machine_id','INT','FK machines(id)'],
+    ['channel','VARCHAR(12)',"DEFAULT 'WHATSAPP'"],['message','TEXT',''],['status','VARCHAR(10)',"QUEUED / SENT / FAILED"],['sent_at','TIMESTAMP','']]}
+};
+
+/* ---------------------- 2. YARDIMCI FONKSİYONLAR ---------------------- */
+const DAY = 864e5;
+const TODAY = (()=>{const d=new Date(); d.setHours(0,0,0,0); return d;})();
+const pad = n => String(n).padStart(2,'0');
+const isoD = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const isoDT = d => `${isoD(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const addDays = (d,n) => new Date(d.getTime()+n*DAY);
+const parseD = s => s ? new Date(s.length===10 ? s+'T00:00' : s) : null;
+const fmtD = s => { if(!s) return '—'; const d=parseD(s); return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`; };
+const fmtDT = s => { if(!s) return '—'; const d=parseD(s); return `${fmtD(s)} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const daysBetween = (a,b) => Math.round((parseD(b)-parseD(a))/DAY);
+const NF0 = new Intl.NumberFormat('tr-TR',{maximumFractionDigits:0});
+const NF1 = new Intl.NumberFormat('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const n0 = v => NF0.format(v||0), n1 = v => NF1.format(v||0);
+const tl = v => NF0.format(v||0)+' ₺';
+const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sum = (arr,f) => arr.reduce((a,r)=>a+((typeof f==='function'?f(r):r[f])||0),0);
+const groupBy = (arr,f) => arr.reduce((m,r)=>{const k=f(r); (m[k]=m[k]||[]).push(r); return m;},{});
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+
+const FILTER_TYPES = {
+  MOTOR_YAG:{label:'Motor Yağ Filtresi', h:250, d:90,  cost:[750,1100]},
+  YAKIT:    {label:'Yakıt Filtresi',     h:500, d:180, cost:[950,1500]},
+  HAVA:     {label:'Hava Filtresi',      h:500, d:180, cost:[1600,2600]},
+  HIDROLIK: {label:'Hidrolik Filtresi',  h:1000,d:365, cost:[2200,3600]}
+};
+const OIL_TYPES = ['Motor Yağı 15W-40','Hidrolik Yağı HV46','Şanzıman Yağı 80W-90'];
+const PARTS = {
+  'Hidrolik hortum':[3500,9000],'Hidrolik pompa':[45000,120000],'Marş motoru':[12000,26000],'Alternatör':[9000,19000],
+  'Yakıt enjektörü':[8000,22000],'Su pompası':[6000,14000],'Turbo şarj':[28000,65000],'Fren balatası':[4000,9000],
+  'Lastik':[14000,38000],'Kova dişi':[2500,7000],'Palet zinciri':[60000,140000],'Akü':[4500,8500],'Fan kayışı':[900,2500],
+  'Radyatör':[11000,24000],'Silindir contası':[5000,13000]
+};
+const CAUSES = ['Normal aşınma','Aşırı ısınma','Operatör hatası','Kirli / kalitesiz yakıt','Bakım gecikmesi','Malzeme yorulması','Darbe / kaza','Elektrik arızası','Sızıntı'];
+const ALERT_DAYS = 14, ALERT_HOURS = 50;
+
+/* ---------------------- 3. DEMO VERİSİ ÜRETİMİ ----------------------- */
+const HIST_DAYS = 150;
+function seed(){
+  const R = mulberry32(20261006);
+  const rnd=(a,b)=>a+R()*(b-a), ri=(a,b)=>Math.floor(rnd(a,b+1)), pick=a=>a[Math.floor(R()*a.length)];
+  const START = addDays(TODAY,-HIST_DAYS);
+  const db = {};
+  db.branches = [
+    {id:1,code:'IST',name:'İstanbul Şubesi',region:'Marmara Bölgesi',city:'İstanbul'},
+    {id:2,code:'ANK',name:'Ankara Şubesi',region:'İç Anadolu Bölgesi',city:'Ankara'},
+    {id:3,code:'IZM',name:'İzmir Şubesi',region:'Ege Bölgesi',city:'İzmir'},
+    {id:4,code:'ANT',name:'Antalya Şubesi',region:'Akdeniz Bölgesi',city:'Antalya'},
+    {id:5,code:'SAM',name:'Samsun Şubesi',region:'Karadeniz Bölgesi',city:'Samsun'}
+  ];
+  db.users = [
+    {id:1,full_name:'Mak. Müh. Murat Yılmaz',role:'MUHENDIS',branch_id:null,phone:'+90 532 000 00 01'},
+    {id:2,full_name:'Ahmet Kaya',role:'SUBE_PERSONELI',branch_id:1,phone:'+90 532 000 00 11'},
+    {id:3,full_name:'Elif Demir',role:'SUBE_PERSONELI',branch_id:2,phone:'+90 532 000 00 12'},
+    {id:4,full_name:'Can Öztürk',role:'SUBE_PERSONELI',branch_id:3,phone:'+90 532 000 00 13'},
+    {id:5,full_name:'Zeynep Aydın',role:'SUBE_PERSONELI',branch_id:4,phone:'+90 532 000 00 14'},
+    {id:6,full_name:'Emre Şahin',role:'SUBE_PERSONELI',branch_id:5,phone:'+90 532 000 00 15'}
+  ];
+  const pj = [
+    [1,'Başakşehir Konut Projesi'],[1,'Kuzey Marmara Bağlantı Yolu'],[1,'Tuzla Lojistik Merkezi'],
+    [2,'Etimesgut Kentsel Dönüşüm'],[2,'Ankara–Kırıkkale Yol Genişletme'],
+    [3,'Menemen OSB Altyapısı'],[3,'Bornova Metro İstasyonu'],
+    [4,'Kepez Hastane Kampüsü'],[4,'Alanya Turizm Kompleksi'],
+    [5,'Samsun Liman Genişletme'],[5,'Atakum Sahil Yolu']
+  ];
+  const seqByBranch={};
+  db.projects = pj.map(([b,name],i)=>{ seqByBranch[b]=(seqByBranch[b]||0)+1; const br=db.branches[b-1];
+    return {id:i+1,branch_id:b,code:`PRJ-${br.code}-${pad(seqByBranch[b])}`,name,start_date:isoD(addDays(TODAY,-ri(200,700))),status:'DEVAM'}; });
+  db.machine_types = [
+    {id:1,code:'EKS',name:'Ekskavatör',fuel_lph:16,oil_capacity_l:32,oil_interval_h:250,oil_interval_d:90,hrs:[6,10],models:[['Komatsu','PC210'],['CAT','320'],['Hitachi','ZX350'],['Hidromek','HMK 220']]},
+    {id:2,code:'KMY',name:'Damperli Kamyon',fuel_lph:12,oil_capacity_l:36,oil_interval_h:250,oil_interval_d:90,hrs:[7,10],models:[['Mercedes','Arocs 4142'],['Ford Trucks','4142D'],['MAN','TGS 41.400']]},
+    {id:3,code:'LDR',name:'Lastikli Yükleyici',fuel_lph:14,oil_capacity_l:30,oil_interval_h:250,oil_interval_d:90,hrs:[5,9],models:[['CAT','966'],['Volvo','L120H']]},
+    {id:4,code:'DZR',name:'Dozer',fuel_lph:21,oil_capacity_l:40,oil_interval_h:250,oil_interval_d:90,hrs:[5,9],models:[['CAT','D6'],['Komatsu','D65']]},
+    {id:5,code:'BKL',name:'Beko Loder',fuel_lph:7,oil_capacity_l:15,oil_interval_h:250,oil_interval_d:90,hrs:[5,9],models:[['JCB','3CX'],['Hidromek','102B']]},
+    {id:6,code:'GRD',name:'Greyder',fuel_lph:13,oil_capacity_l:28,oil_interval_h:250,oil_interval_d:90,hrs:[4,8],models:[['CAT','140K'],['Mitsubishi','MG330']]},
+    {id:7,code:'SLN',name:'Silindir',fuel_lph:9,oil_capacity_l:18,oil_interval_h:250,oil_interval_d:90,hrs:[4,8],models:[['Hamm','3410'],['Bomag','BW213']]},
+    {id:8,code:'VNC',name:'Mobil Vinç',fuel_lph:11,oil_capacity_l:30,oil_interval_h:300,oil_interval_d:120,hrs:[3,7],models:[['Liebherr','LTM 1090'],['Tadano','GR-600']]},
+    {id:9,code:'BPM',name:'Beton Pompası',fuel_lph:10,oil_capacity_l:24,oil_interval_h:250,oil_interval_d:90,hrs:[3,7],models:[['Putzmeister','M38'],['Schwing','S36']]},
+    {id:10,code:'JNR',name:'Jeneratör',fuel_lph:15,oil_capacity_l:22,oil_interval_h:500,oil_interval_d:180,hrs:[8,14],models:[['Aksa','APD 250'],['Teksan','TJ 200']]}
+  ];
+  // Makineler
+  db.machines=[]; const typeSeq={};
+  db.projects.forEach(p=>{
+    const n=ri(4,6); const pool=[1,2,1,3,5,4,6,7,8,9,10,2];
+    for(let k=0;k<n;k++){
+      const tid=k<2?pool[k]:pick(pool); const t=db.machine_types.find(x=>x.id===tid);
+      typeSeq[t.code]=(typeSeq[t.code]||0)+1;
+      const [brand,model]=pick(t.models);
+      db.machines.push({id:db.machines.length+1,code:`EKP-${t.code}-${String(typeSeq[t.code]).padStart(4,'0')}`,type_id:t.id,project_id:p.id,
+        brand,model,model_year:ri(2012,2024),initial_hour_meter:ri(1500,11000),status:'AKTIF'});
+    }
+  });
+  const mtype = m => db.machine_types.find(t=>t.id===m.type_id);
+  const pbranch = pid => db.projects.find(p=>p.id===pid).branch_id;
+  const staffOf = b => db.users.find(u=>u.branch_id===b).id;
+
+  // Transferler (tamamlanmış + yolda)
+  db.transfer_logs=[];
+  const timeline={}; db.machines.forEach(m=>timeline[m.id]=[{from:-1,pid:m.project_id}]);
+  const plannedTransfers=[[3,6,95],[14,10,62],[27,1,34],[40,8,12]];
+  plannedTransfers.forEach(([mid,toPid,ago])=>{
+    const m=db.machines[mid-1]; if(!m) return;
+    const fromPid=timeline[m.id][timeline[m.id].length-1].pid; if(pbranch(fromPid)===pbranch(toPid)) toPid=(toPid%11)+1;
+    const co=addDays(TODAY,-ago); co.setHours(ri(7,10),pick([0,15,30,45]));
+    const ci=addDays(co,ri(1,2)); ci.setHours(ri(9,16),pick([0,20,40]));
+    db.transfer_logs.push({id:db.transfer_logs.length+1,machine_id:m.id,from_project_id:fromPid,from_branch_id:pbranch(fromPid),
+      to_project_id:toPid,to_branch_id:pbranch(toPid),checkout_at:isoDT(co),checkout_by:staffOf(pbranch(fromPid)),
+      checkin_at:isoDT(ci),checkin_by:staffOf(pbranch(toPid)),note:'Proje ihtiyacı doğrultusunda sevk.'});
+    timeline[m.id].push({from:HIST_DAYS-ago+1,pid:toPid});
+    m.project_id=toPid;
+  });
+  // Yolda olan transfer
+  { const m=db.machines[db.machines.length-3]; const fromPid=m.project_id; const toPid=fromPid<=4?9:2;
+    const co=addDays(TODAY,-1); co.setHours(8,30);
+    db.transfer_logs.push({id:db.transfer_logs.length+1,machine_id:m.id,from_project_id:fromPid,from_branch_id:pbranch(fromPid),
+      to_project_id:toPid,to_branch_id:pbranch(toPid),checkout_at:isoDT(co),checkout_by:staffOf(pbranch(fromPid)),
+      checkin_at:null,checkin_by:null,note:'Lowbed ile sevk ediliyor.'});
+    m.status='TRANSFERDE'; m._transitFrom=HIST_DAYS-1; }
+  const pidAt=(m,dayIdx)=>{let p=timeline[m.id][0].pid; for(const t of timeline[m.id]) if(dayIdx>=t.from) p=t.pid; return p;};
+
+  // Açık arızalar (makine şu an arızalı)
+  const openBreak={}; [[9,2],[33,1]].forEach(([mid,ago])=>{openBreak[mid]=HIST_DAYS-ago; db.machines[mid-1].status='ARIZALI';});
+
+  // Çalışma saatleri + yakıt
+  db.operating_hours=[]; db.fuel_logs=[];
+  const meterEnd={}; // her makine için gün sonu sayaç dizisi
+  db.machines.forEach(m=>{
+    const t=mtype(m); let meter=m.initial_hour_meter; const arr=[]; let acc=0, nextFill=ri(1,3);
+    for(let d=0; d<HIST_DAYS; d++){
+      const date=addDays(START,d); const dow=date.getDay();
+      const stop=(openBreak[m.id]!==undefined && d>=openBreak[m.id]) || (m._transitFrom!==undefined && d>=m._transitFrom);
+      let h=0;
+      if(!stop && !(dow===0 && R()<0.8) && R()>0.05){ h=Math.round(rnd(t.hrs[0],t.hrs[1])*2)/2; if(dow===6) h=Math.round(h*0.6*2)/2; }
+      const pid=pidAt(m,d), bid=pbranch(pid);
+      if(h>0){ db.operating_hours.push({id:db.operating_hours.length+1,machine_id:m.id,branch_id:bid,project_id:pid,work_date:isoD(date),hours:h,recorded_by:staffOf(bid)}); }
+      meter+=h; arr.push(meter); acc+=h;
+      if(--nextFill<=0 && acc>0){
+        const dt=new Date(date); dt.setHours(ri(7,17),pick([0,10,20,30,40,50]));
+        if(d===HIST_DAYS-1 && dt>new Date()) dt.setHours(7,0);
+        db.fuel_logs.push({id:db.fuel_logs.length+1,machine_id:m.id,branch_id:bid,project_id:pid,logged_at:isoDT(dt),
+          liters:Math.round(acc*t.fuel_lph*rnd(0.9,1.12)),unit_price:Math.round(rnd(45.2,48.6)*100)/100,recorded_by:staffOf(bid)});
+        acc=0; nextFill=ri(1,3);
+      }
+    }
+    meterEnd[m.id]=arr;
+    delete m._transitFrom;
+  });
+  // Belirli bir "hedef saat önce" yapılmış bakımın gününü bul
+  function dayForHoursAgo(m,hoursAgo){
+    const arr=meterEnd[m.id], last=arr[arr.length-1];
+    for(let d=arr.length-1; d>=0; d--) if(last-arr[d]>=hoursAgo) return {date:addDays(START,d),meter:arr[d],dayIdx:d};
+    const extra=Math.ceil((hoursAgo-(last-m.initial_hour_meter))/6.5);
+    return {date:addDays(START,-extra),meter:last-hoursAgo,dayIdx:0};
+  }
+  // Yağ & filtre
+  db.oil_logs=[]; db.filter_logs=[];
+  db.machines.forEach(m=>{
+    const t=mtype(m);
+    const mk=(log)=>{ const pid=pidAt(m,log.dayIdx), bid=pbranch(pid); return {branch_id:bid,project_id:pid,recorded_by:staffOf(bid)}; };
+    // yağ değişimi: önceki + son
+    const f=R()<0.1?rnd(0.97,1.08):rnd(0.1,0.8);
+    const last=dayForHoursAgo(m,Math.round(t.oil_interval_h*f));
+    const prev=dayForHoursAgo(m,Math.round(t.oil_interval_h*(f+rnd(0.92,1.05))));
+    [prev,last].forEach(x=>{ const dt=new Date(x.date); dt.setHours(ri(7,16),pick([0,15,30,45]));
+      const liters=t.oil_capacity_l;
+      db.oil_logs.push({id:db.oil_logs.length+1,machine_id:m.id,...mk(x),logged_at:isoDT(dt),operation:'DEGISIM',oil_type:OIL_TYPES[0],liters,
+        hour_meter:Math.round(x.meter),interval_h:t.oil_interval_h,interval_d:t.oil_interval_d,
+        next_due_hours:Math.round(x.meter)+t.oil_interval_h,next_due_date:isoD(addDays(x.date,t.oil_interval_d)),cost:Math.round(liters*rnd(160,185)+600)}); });
+    // ilave
+    for(let k=0;k<ri(0,3);k++){ const x=dayForHoursAgo(m,ri(5,300)); const dt=new Date(x.date); dt.setHours(ri(7,17),pick([0,30]));
+      const liters=ri(2,6); db.oil_logs.push({id:db.oil_logs.length+1,machine_id:m.id,...mk(x),logged_at:isoDT(dt),operation:'ILAVE',oil_type:pick(OIL_TYPES),liters,
+        hour_meter:Math.round(x.meter),interval_h:null,interval_d:null,next_due_hours:null,next_due_date:null,cost:Math.round(liters*rnd(170,190))}); }
+    // filtreler
+    Object.entries(FILTER_TYPES).forEach(([key,ft])=>{
+      if(key==='HIDROLIK' && (t.code==='KMY'||t.code==='JNR')) return;
+      const ih=key==='MOTOR_YAG'?t.oil_interval_h:ft.h, id_=key==='MOTOR_YAG'?t.oil_interval_d:ft.d;
+      const ff=R()<0.07?rnd(0.97,1.06):rnd(0.08,0.8); const x=dayForHoursAgo(m,Math.round(ih*ff)); const dt=new Date(x.date); dt.setHours(ri(7,16),pick([0,15,30,45]));
+      db.filter_logs.push({id:db.filter_logs.length+1,machine_id:m.id,...mk(x),filter_type:key,changed_at:isoDT(dt),hour_meter:Math.round(x.meter),
+        interval_h:ih,interval_d:id_,next_due_hours:Math.round(x.meter)+ih,next_due_date:isoD(addDays(x.date,id_)),cost:ri(ft.cost[0],ft.cost[1])});
+    });
+  });
+  // Arızalar
+  db.breakdown_logs=[];
+  db.machines.forEach(m=>{
+    const age=2026-m.model_year; const cnt=ri(0, age>8?4:age>4?3:2);
+    const used=[];
+    const days=[...Array(cnt)].map(()=>ri(3,HIST_DAYS-4)).sort((a,b)=>a-b);
+    days.forEach(d=>{
+      const part=(used.length && R()<0.35)?pick(used):pick(Object.keys(PARTS));
+      const prevSame=db.breakdown_logs.filter(b=>b.machine_id===m.id && b.part===part).pop();
+      const dt=addDays(START,d); dt.setHours(ri(7,17),pick([0,10,25,40,55]));
+      const down=Math.round(rnd(2,60)*2)/2; const pid=pidAt(m,d), bid=pbranch(pid);
+      const lr = prevSame ? prevSame.occurred_at.slice(0,10) : (R()<0.65 ? isoD(addDays(dt,-ri(180,1100))) : null);
+      db.breakdown_logs.push({id:db.breakdown_logs.length+1,machine_id:m.id,branch_id:bid,project_id:pid,part,cause:pick(CAUSES),description:'',
+        occurred_at:isoDT(dt),part_last_replaced_at:lr,downtime_hours:down,cost:Math.round(rnd(...PARTS[part])/50)*50,
+        status:'GIDERILDI',resolved_at:isoDT(new Date(dt.getTime()+down*3600e3)),recorded_by:staffOf(bid)});
+      used.push(part);
+    });
+  });
+  Object.entries(openBreak).forEach(([mid,d])=>{
+    const m=db.machines[mid-1]; const pid=m.project_id, bid=pbranch(pid); const dt=addDays(START,d); dt.setHours(10,15);
+    const part=mid==9?'Hidrolik pompa':'Turbo şarj';
+    db.breakdown_logs.push({id:db.breakdown_logs.length+1,machine_id:m.id,branch_id:bid,project_id:pid,part,cause:mid==9?'Bakım gecikmesi':'Aşırı ısınma',
+      description:'Parça siparişi bekleniyor.',occurred_at:isoDT(dt),part_last_replaced_at:isoD(addDays(dt,-640)),downtime_hours:null,
+      cost:mid==9?86500:41200,status:'ACIK',resolved_at:null,recorded_by:staffOf(bid)});
+  });
+  db.meta={version:1,seeded_at:new Date().toISOString(),seed_today:isoD(TODAY)};
+  return db;
+}
+
+/* ------------------------ 4. KALICILIK (localStorage) ------------------------ */
+const LS_DB='mkp_demo_db_v1', LS_SES='mkp_demo_session_v1';
+let DB;
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function loadDB(){
+  const raw=lsGet(LS_DB);
+  if(raw){ try{ const d=JSON.parse(raw); if(d.meta && d.meta.seed_today===isoD(TODAY)) return d; }catch(e){} }
+  const d=seed(); lsSet(LS_DB,JSON.stringify(d)); return d;
+}
+function saveDB(){ lsSet(LS_DB,JSON.stringify(DB)); buildIndex(); }
+function nextId(table){ return DB[table].reduce((a,r)=>Math.max(a,r.id),0)+1; }
+
+/* ------------------------ 5. İNDEKS & SORGULAR ------------------------ */
+let IDX={};
+function buildIndex(){
+  IDX.branch=Object.fromEntries(DB.branches.map(r=>[r.id,r]));
+  IDX.project=Object.fromEntries(DB.projects.map(r=>[r.id,r]));
+  IDX.type=Object.fromEntries(DB.machine_types.map(r=>[r.id,r]));
+  IDX.machine=Object.fromEntries(DB.machines.map(r=>[r.id,r]));
+  IDX.user=Object.fromEntries(DB.users.map(r=>[r.id,r]));
+  IDX.meter={}; IDX.avg={};
+  const since=isoD(addDays(TODAY,-14));
+  DB.machines.forEach(m=>{IDX.meter[m.id]=m.initial_hour_meter; IDX.avg[m.id]=0;});
+  DB.operating_hours.forEach(r=>{ IDX.meter[r.machine_id]+=r.hours; if(r.work_date>=since) IDX.avg[r.machine_id]+=r.hours; });
+  DB.machines.forEach(m=>{ IDX.avg[m.id]=IDX.avg[m.id]/14; });
+  IDX.maint=computeMaintenance();
+}
+const branchOfMachine = m => IDX.project[m.project_id].branch_id;
+const typeName = m => IDX.type[m.type_id].name;
+
+/* Oturum / yetki */
+let S = Object.assign({role:'manager',branchId:1,period:'30',view:'dashboard',sort:{}},
+  (()=>{try{return JSON.parse(lsGet(LS_SES)||'{}');}catch(e){return {};}})());
+const saveSession=()=>lsSet(LS_SES,JSON.stringify(S));
+const isMgr = () => S.role==='manager';
+const inScope = bid => isMgr() || bid===S.branchId;
+const periodStart = () => S.period==='all' ? null : isoD(addDays(TODAY,-(+S.period)+1));
+const inPeriod = s => { const ps=periodStart(); return !ps || String(s).slice(0,10)>=ps; };
+const visibleMachines = () => DB.machines.filter(m=>inScope(branchOfMachine(m)) || DB.transfer_logs.some(t=>t.machine_id===m.id && !t.checkin_at && inScope(t.to_branch_id)));
+const visibleBranches = () => DB.branches.filter(b=>inScope(b.id));
+/* Kayıt tablolarında yetki: kayıt anındaki şube (branch_id) esas alınır */
+function rows(table,dateField,opts={}){
+  return DB[table].filter(r=>inScope(r.branch_id) && (opts.allTime||!dateField||inPeriod(r[dateField])));
+}
+function currentUser(){ return isMgr()? DB.users.find(u=>u.role==='MUHENDIS') : DB.users.find(u=>u.branch_id===S.branchId); }
+
+/* ------------------------ 6. BAKIM HESAPLAMA (UYARILAR) ------------------------ */
+function evalItem(m,log,label,kind){
+  const meter=IDX.meter[m.id], avg=IDX.avg[m.id];
+  const dueH=log.hour_meter+log.interval_h, dueD=addDays(parseD(log.logged_at||log.changed_at),log.interval_d); dueD.setHours(0,0,0,0);
+  const remH=dueH-meter, daysByDate=Math.round((dueD-TODAY)/DAY);
+  const daysByHours = avg>0.2 ? Math.floor(remH/avg) : Infinity;
+  const eff=Math.min(daysByDate,daysByHours);
+  const trigger = daysByHours<daysByDate ? 'Saat' : 'Tarih';
+  const level = (remH<=0 || daysByDate<0) ? 'overdue' : (eff<=ALERT_DAYS || remH<=ALERT_HOURS) ? 'soon' : 'ok';
+  const usedPct = Math.max((meter-log.hour_meter)/log.interval_h, daysBetween(isoD(parseD(log.logged_at||log.changed_at)),isoD(TODAY))/log.interval_d);
+  return {machine:m,label,kind,log,meter,dueH,dueD:isoD(dueD),remH,daysByDate,daysByHours,eff,trigger,level,usedPct,
+    estDate: isFinite(eff)? isoD(addDays(TODAY,eff)) : isoD(dueD)};
+}
+function computeMaintenance(){
+  const out=[];
+  const oilBy=groupBy(DB.oil_logs.filter(o=>o.operation==='DEGISIM'),o=>o.machine_id);
+  const filBy=groupBy(DB.filter_logs,f=>f.machine_id+'|'+f.filter_type);
+  DB.machines.forEach(m=>{
+    const ol=(oilBy[m.id]||[]).sort((a,b)=>a.logged_at<b.logged_at?-1:1).pop();
+    if(ol) out.push(evalItem(m,ol,'Motor Yağı Değişimi','oil'));
+    Object.entries(FILTER_TYPES).forEach(([k,ft])=>{
+      const fl=(filBy[m.id+'|'+k]||[]).sort((a,b)=>a.changed_at<b.changed_at?-1:1).pop();
+      if(fl) out.push(evalItem(m,fl,ft.label,'filter'));
+    });
+  });
+  return out;
+}
+const scopedMaint = () => IDX.maint.filter(x=>inScope(branchOfMachine(x.machine)));
+const activeAlerts = () => scopedMaint().filter(x=>x.level!=='ok').sort((a,b)=>(a.level===b.level?0:a.level==='overdue'?-1:1)||a.eff-b.eff);
+
+/* ------------------------ 7. GRAFİK BİLEŞENLERİ ------------------------ */
+const PALETTE=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)'];
+function hbar(items,fmt,color='var(--c1)'){
+  if(!items.length) return '<div class="empty">Veri yok</div>';
+  const max=Math.max(...items.map(i=>i.value),1);
+  return `<div class="hbar">${items.map(i=>`<div class="hbar-row" title="${esc(i.label)}: ${esc(fmt(i.value))}">
+    <span class="lb">${esc(i.label)}</span>
+    <div class="hbar-track"><div class="hbar-fill" style="width:${(i.value/max*100).toFixed(1)}%;background:${i.color||color}"></div></div>
+    <span class="vl">${fmt(i.value)}</span></div>`).join('')}</div>`;
+}
+function stacked(items,legend,fmt){
+  if(!items.length) return '<div class="empty">Veri yok</div>';
+  const max=Math.max(...items.map(i=>i.parts.reduce((a,b)=>a+b,0)),1);
+  return `<div class="legend">${legend.map((l,k)=>`<span><i style="background:${PALETTE[k]}"></i>${esc(l)}</span>`).join('')}</div>
+  <div class="hbar">${items.map(i=>{const tot=i.parts.reduce((a,b)=>a+b,0);
+    return `<div class="hbar-row"><span class="lb">${esc(i.label)}</span><div class="hbar-track">${i.parts.map((p,k)=>`<div class="hbar-fill" title="${esc(legend[k])}: ${esc(fmt(p))}" style="border-radius:0;width:${(p/max*100).toFixed(2)}%;background:${PALETTE[k]}"></div>`).join('')}</div><span class="vl">${fmt(tot)}</span></div>`;}).join('')}</div>`;
+}
+function columns(series,fmt,color='var(--c1)'){
+  const max=Math.max(...series.map(s=>s.value),1);
+  return `<div class="cols">${series.map(s=>`<div class="col" title="${esc(s.label)}: ${esc(fmt(s.value))}"><span class="tv">${s.value&&series.length<=8?fmt(s.value):''}</span><div class="bar" style="height:${(s.value/max*82).toFixed(1)}%;background:${color}"></div></div>`).join('')}</div>
+  <div class="cols-x">${series.map((s,i)=>`<span>${series.length>8&&i%2?'':esc(s.label)}</span>`).join('')}</div>
+  ${series.length>8?`<div class="faint" style="font-size:11.5px;margin-top:8px">Ortalama ${fmt(series.reduce((a,s)=>a+s.value,0)/series.length)} · En yüksek ${fmt(max)} · değerler için sütunun üzerine gelin</div>`:''}`;
+}
+
+/* ------------------------ 8. TABLO BİLEŞENİ ------------------------ */
+function table(id,cols,data,opts={}){
+  const st=S.sort[id]; let d=data.slice();
+  if(st){ const c=cols.find(c=>c.k===st.k); if(c){ const val=c.sv||(r=>r[c.k]); d.sort((a,b)=>{const x=val(a),y=val(b); return (x>y?1:x<y?-1:0)*st.dir;}); } }
+  const limit=opts.limit||400; const shown=d.slice(0,limit);
+  if(!d.length) return `<div class="empty">${opts.empty||'Bu kapsamda kayıt bulunamadı.'}</div>`;
+  return `<div class="tbl-wrap"><table><thead><tr>${cols.map(c=>`<th class="${c.num?'n':''}" ${c.nosort?'':`data-sort="${id}|${c.k}"`}>${c.label}${st&&st.k===c.k?(st.dir>0?' ▲':' ▼'):''}</th>`).join('')}</tr></thead>
+  <tbody>${shown.map(r=>`<tr ${opts.rowAttr?opts.rowAttr(r):''}>${cols.map(c=>`<td class="${c.num?'n':''}">${c.f?c.f(r):esc(r[c.k])}</td>`).join('')}</tr>`).join('')}</tbody>
+  ${opts.foot?`<tfoot><tr>${opts.foot}</tr></tfoot>`:''}</table></div>
+  ${d.length>limit?`<div class="faint" style="padding:8px 16px;font-size:12px">İlk ${limit} kayıt gösteriliyor (toplam ${n0(d.length)}).</div>`:''}`;
+}
+const mCode = id => { const m=IDX.machine[id]; return `<span class="code">${esc(m.code)}</span>`; };
+const mLink = id => `<a href="#" data-action="machine" data-id="${id}" class="code" style="text-decoration:none">${esc(IDX.machine[id].code)}</a>`;
+const bName = id => esc(IDX.branch[id]?.name.replace(' Şubesi','') ?? '—');
+const pName = id => esc(IDX.project[id]?.name ?? '—');
+const statusPill = s => ({AKTIF:'<span class="pill ok"><span class="dot"></span>Aktif</span>',ARIZALI:'<span class="pill bad"><span class="dot"></span>Arızalı</span>',TRANSFERDE:'<span class="pill info"><span class="dot"></span>Transferde</span>'}[s]||s);
+const levelPill = (x) => x.level==='overdue'?'<span class="pill bad">Gecikmiş</span>':x.level==='soon'?'<span class="pill warn">Yaklaşıyor</span>':'<span class="pill ok">Normal</span>';
+function remText(x){
+  const h = x.remH<=0 ? `<b style="color:var(--bad-2)">${n0(-x.remH)} sa geçti</b>` : `${n0(x.remH)} sa kaldı`;
+  const d = x.daysByDate<0 ? `<b style="color:var(--bad-2)">${-x.daysByDate} gün geçti</b>` : `${x.daysByDate} gün kaldı`;
+  return `${h} · ${d}`;
+}
+
+/* ------------------------ 9. RAPOR METRİKLERİ ------------------------ */
+function metricsFor(filterFn){
+  const f=r=>filterFn(r);
+  const oh=rows('operating_hours','work_date').filter(f), fu=rows('fuel_logs','logged_at').filter(f),
+        ol=rows('oil_logs','logged_at').filter(f), fl=rows('filter_logs','changed_at').filter(f), bd=rows('breakdown_logs','occurred_at').filter(f);
+  const now=new Date();
+  const downtime=sum(bd,b=>b.status==='ACIK'?(now-parseD(b.occurred_at))/3600e3:b.downtime_hours);
+  const hours=sum(oh,'hours'), fuel=sum(fu,'liters'), oil=sum(ol,'liters');
+  const costB=sum(bd,'cost'), costO=sum(ol,'cost'), costF=sum(fl,'cost'), fuelCost=sum(fu,r=>r.liters*r.unit_price);
+  return {hours,fuel,oil,fuelCost,costB,costO,costF,maint:costB+costO+costF,breakdowns:bd.length,downtime,
+    fuelPerH: hours?fuel/hours:0, costPerH: hours?(costB+costO+costF)/hours:0, bdPer1000: hours?bd.length/hours*1000:0,
+    _bd:bd,_oh:oh,_fu:fu};
+}
+function machineSummaryRows(){
+  const oh=groupBy(rows('operating_hours','work_date'),r=>r.machine_id), fu=groupBy(rows('fuel_logs','logged_at'),r=>r.machine_id),
+        ol=groupBy(rows('oil_logs','logged_at'),r=>r.machine_id), fl=groupBy(rows('filter_logs','changed_at'),r=>r.machine_id),
+        bd=groupBy(rows('breakdown_logs','occurred_at'),r=>r.machine_id);
+  return visibleMachines().map(m=>{
+    const h=sum(oh[m.id]||[],'hours'), f=sum(fu[m.id]||[],'liters'), o=sum(ol[m.id]||[],'liters');
+    const cost=sum(bd[m.id]||[],'cost')+sum(ol[m.id]||[],'cost')+sum(fl[m.id]||[],'cost');
+    return {id:m.id,code:m.code,type:typeName(m),project:IDX.project[m.project_id].name,branch:branchOfMachine(m),status:m.status,
+      meter:IDX.meter[m.id],hours:h,fuel:f,lph:h?f/h:0,oil:o,bd:(bd[m.id]||[]).length,cost};
+  });
+}
+
+/* ------------------------ 10. GÖRÜNÜMLER ------------------------ */
+const VIEWS = [
+  {id:'dashboard',label:'Gösterge Paneli',ico:'▦',sec:'Genel'},
+  {id:'alerts',label:'Bakım Uyarıları',ico:'⚠',sec:'Genel'},
+  {id:'compare',label:'Şube Karşılaştırma',ico:'⇄',sec:'Genel',mgr:true},
+  {id:'machines',label:'Makineler',ico:'⚙',sec:'Envanter'},
+  {id:'transfers',label:'Transferler',ico:'⇆',sec:'Envanter'},
+  {id:'fuel',label:'Yakıt Kayıtları',ico:'⛽',sec:'Kayıtlar'},
+  {id:'oil',label:'Yağ Kayıtları',ico:'◍',sec:'Kayıtlar'},
+  {id:'filters',label:'Filtre Kayıtları',ico:'▤',sec:'Kayıtlar'},
+  {id:'hours',label:'Çalışma Saatleri',ico:'◷',sec:'Kayıtlar'},
+  {id:'breakdowns',label:'Arıza Kayıtları',ico:'✖',sec:'Kayıtlar'},
+  {id:'schema',label:'Veri Modeli',ico:'⛁',sec:'Sistem'}
+];
+const periodLabel = () => ({'7':'Son 7 gün','30':'Son 30 gün','90':'Son 90 gün','all':'Tüm kayıtlar'})[S.period];
+
+function viewDashboard(){
+  const M=metricsFor(()=>true); const vm=visibleMachines(); const alerts=activeAlerts();
+  const over=alerts.filter(a=>a.level==='overdue').length;
+  const groupKey = isMgr()? (r=>r.branch_id) : (r=>r.project_id);
+  const groupLabel = isMgr()? (k=>IDX.branch[k].name.replace(' Şubesi','')) : (k=>IDX.project[k].name);
+  const groups = isMgr()? DB.branches.map(b=>b.id) : DB.projects.filter(p=>p.branch_id===S.branchId).map(p=>p.id);
+  const per = groups.map(g=>({g,label:groupLabel(g),m:metricsFor(r=>groupKey(r)===g)}));
+  // haftalık çalışma saati (12 hafta)
+  const weeks=[]; for(let w=11;w>=0;w--){ const end=addDays(TODAY,-w*7), st=addDays(end,-6);
+    const v=sum(rows('operating_hours','work_date',{allTime:true}).filter(r=>r.work_date>=isoD(st)&&r.work_date<=isoD(end)),'hours');
+    weeks.push({label:`${pad(st.getDate())}.${pad(st.getMonth()+1)}`,value:Math.round(v)}); }
+  const partFreq=Object.entries(groupBy(M._bd,b=>b.part)).map(([k,v])=>({label:k,value:v.length})).sort((a,b)=>b.value-a.value).slice(0,8);
+  const ms=machineSummaryRows().sort((a,b)=>b.cost-a.cost);
+  return `
+  <div class="kpis">
+    <div class="card kpi"><div class="l">Makine Sayısı</div><div class="v">${vm.length}</div><div class="s">${vm.filter(m=>m.status==='ARIZALI').length} arızalı · ${vm.filter(m=>m.status==='TRANSFERDE').length} transferde</div></div>
+    <div class="card kpi"><div class="l">Toplam Çalışma</div><div class="v">${n0(M.hours)}<small>saat</small></div><div class="s">${periodLabel()}</div></div>
+    <div class="card kpi"><div class="l">Yakıt Tüketimi</div><div class="v">${n0(M.fuel)}<small>L</small></div><div class="s">${n1(M.fuelPerH)} L/saat · ≈ ${tl(M.fuelCost)}</div></div>
+    <div class="card kpi"><div class="l">Yağ Tüketimi</div><div class="v">${n0(M.oil)}<small>L</small></div><div class="s">Değişim + ilave</div></div>
+    <div class="card kpi"><div class="l">Bakım & Onarım Maliyeti</div><div class="v">${tl(M.maint)}</div><div class="s">${tl(M.costPerH)} / çalışma saati</div></div>
+    <div class="card kpi"><div class="l">Arıza Sayısı</div><div class="v">${M.breakdowns}</div><div class="s">${n0(M.downtime)} sa duruş · ${n1(M.bdPer1000)} / 1000 sa</div></div>
+    <div class="card kpi ${over?'alert':''}"><div class="l">Açık Bakım Uyarısı</div><div class="v">${alerts.length}</div><div class="s">${over} gecikmiş · ${alerts.length-over} yaklaşan</div></div>
+  </div>
+
+  <div class="grid g32">
+    <div class="card"><div class="card-h"><h3>Acil Bakım Uyarıları</h3><span class="sub">Yağ & filtre — saat veya tarihe göre hangisi önce gelirse</span>
+      <button class="btn sm r" data-nav="alerts">Tümünü gör →</button></div>
+      <div class="card-b">${alertList(alerts.slice(0,6))}</div></div>
+    <div class="card"><div class="card-h"><h3>Haftalık Çalışma Saati</h3><span class="sub">Son 12 hafta · saat · hafta başlangıcı</span></div>
+      <div class="card-b">${columns(weeks,n0)}</div></div>
+  </div>
+
+  <div class="grid g3">
+    <div class="card"><div class="card-h"><h3>Yakıt Tüketimi</h3><span class="sub">${isMgr()?'şube bazında':'proje bazında'} · litre</span></div>
+      <div class="card-b">${hbar(per.map(p=>({label:p.label,value:p.m.fuel})),v=>n0(v)+' L')}</div></div>
+    <div class="card"><div class="card-h"><h3>Yağ Tüketimi</h3><span class="sub">${isMgr()?'şube bazında':'proje bazında'} · litre</span></div>
+      <div class="card-b">${hbar(per.map(p=>({label:p.label,value:p.m.oil})),v=>n0(v)+' L','var(--c2)')}</div></div>
+    <div class="card"><div class="card-h"><h3>Çalışma Saati</h3><span class="sub">${isMgr()?'şube bazında':'proje bazında'}</span></div>
+      <div class="card-b">${hbar(per.map(p=>({label:p.label,value:p.m.hours})),v=>n0(v)+' sa','var(--c3)')}</div></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><div class="card-h"><h3>Kümülatif Bakım Maliyeti</h3><span class="sub">${periodLabel()}</span></div>
+      <div class="card-b">${stacked(per.map(p=>({label:p.label,parts:[p.m.costB,p.m.costO,p.m.costF]})),['Arıza onarım','Yağ','Filtre'],tl)}</div></div>
+    <div class="card"><div class="card-h"><h3>En Sık Arızalanan Parçalar</h3><span class="sub">arıza adedi</span></div>
+      <div class="card-b">${hbar(partFreq,v=>v+' kez','var(--c5)')}</div></div>
+  </div>
+
+  <div class="card"><div class="card-h"><h3>Makine Bazında Özet</h3><span class="sub">${periodLabel()} · başlığa tıklayarak sıralayın, satıra tıklayarak detay açın</span></div>
+    <div class="card-b" style="padding:12px 0 0">${table('dashM',[
+      {k:'code',label:'Kod',f:r=>mLink(r.id)},{k:'type',label:'Tür'},
+      ...(isMgr()?[{k:'branch',label:'Şube',f:r=>bName(r.branch)}]:[]),{k:'project',label:'Proje'},
+      {k:'status',label:'Durum',f:r=>statusPill(r.status)},
+      {k:'meter',label:'Sayaç',num:1,f:r=>n0(r.meter)},{k:'hours',label:'Çalışma (sa)',num:1,f:r=>n1(r.hours)},
+      {k:'fuel',label:'Yakıt (L)',num:1,f:r=>n0(r.fuel)},{k:'lph',label:'L/sa',num:1,f:r=>n1(r.lph)},
+      {k:'oil',label:'Yağ (L)',num:1,f:r=>n0(r.oil)},{k:'bd',label:'Arıza',num:1},{k:'cost',label:'Bakım Maliyeti',num:1,f:r=>tl(r.cost)}
+    ],ms,{rowAttr:r=>`class="click" data-action="machine" data-id="${r.id}"`,
+      foot:`<td colspan="${isMgr()?6:5}">Toplam (${ms.length} makine)</td><td class="n">${n1(sum(ms,'hours'))}</td><td class="n">${n0(sum(ms,'fuel'))}</td><td class="n">—</td><td class="n">${n0(sum(ms,'oil'))}</td><td class="n">${sum(ms,'bd')}</td><td class="n">${tl(sum(ms,'cost'))}</td>`})}</div></div>`;
+}
+
+function alertList(list){
+  if(!list.length) return '<div class="empty">✓ Yaklaşan veya geciken bakım bulunmuyor.</div>';
+  return `<div class="alert-list">${list.map(x=>{const m=x.machine; const pct=Math.min(x.usedPct,1.2);
+    return `<div class="alert-item ${x.level}" data-action="machine" data-id="${m.id}"><span class="stripe"></span>
+    <div><div class="t"><span class="code">${esc(m.code)}</span> · ${esc(x.label)} ${levelPill(x)}</div>
+      <div class="m">${esc(typeName(m))} · ${esc(IDX.project[m.project_id].name)}${isMgr()?' · '+bName(branchOfMachine(m)):''}</div>
+      <div class="m">${remText(x)} · <b>Belirleyici kriter: ${x.trigger}</b></div></div>
+    <div class="rt"><div class="faint">${x.level==='overdue'?'Vade tarihi':'Tahmini tarih'}</div><b>${fmtD(x.estDate)}</b><br>
+      <span class="meter"><i style="width:${Math.min(pct,1)*100}%;background:${x.level==='overdue'?'var(--bad-2)':'var(--warn)'}"></i></span></div></div>`;}).join('')}</div>`;
+}
+
+function viewAlerts(){
+  const all=scopedMaint(); const act=activeAlerts();
+  const st=S.alertFilter||'active';
+  const list = st==='active'?act : st==='overdue'?act.filter(a=>a.level==='overdue') : all.slice().sort((a,b)=>a.eff-b.eff);
+  const top=act[0]; const u=currentUser();
+  const branchStaff = top? DB.users.find(x=>x.branch_id===branchOfMachine(top.machine)) : null;
+  const eng=DB.users.find(x=>x.role==='MUHENDIS');
+  const msg = top ? `⚠️ *BAKIM UYARISI*\nMakine: *${top.machine.code}* (${typeName(top.machine)})\nProje: ${IDX.project[top.machine.project_id].name}\nİşlem: ${top.label}\nDurum: ${top.level==='overdue'?'GECİKMİŞ':'Yaklaşıyor'}\nSayaç: ${n0(top.meter)} sa / Hedef: ${n0(top.dueH)} sa\nHedef tarih: ${fmtD(top.dueD)}\nBelirleyici kriter: ${top.trigger}` : 'Aktif uyarı bulunmuyor.';
+  return `
+  <div class="grid g32">
+    <div class="card"><div class="card-h"><h3>Bakım Uyarı Panosu</h3><span class="sub">Eşik: ${ALERT_DAYS} gün veya ${ALERT_HOURS} çalışma saati kala</span></div>
+      <div class="toolbar" style="padding-top:12px">
+        <button class="btn sm ${st==='active'?'primary':''}" data-alertf="active">Aktif uyarılar (${act.length})</button>
+        <button class="btn sm ${st==='overdue'?'primary':''}" data-alertf="overdue">Yalnız gecikmiş (${act.filter(a=>a.level==='overdue').length})</button>
+        <button class="btn sm ${st==='all'?'primary':''}" data-alertf="all">Tüm bakım planı (${all.length})</button>
+      </div>
+      <div class="card-b" style="padding-top:0">${st==='all'? table('maintAll',[
+        {k:'code',label:'Makine',sv:r=>r.machine.code,f:r=>mLink(r.machine.id)},{k:'label',label:'Bakım Kalemi'},
+        {k:'level',label:'Durum',f:levelPill},{k:'meter',label:'Sayaç',num:1,f:r=>n0(r.meter)},{k:'dueH',label:'Hedef Saat',num:1,f:r=>n0(r.dueH)},
+        {k:'dueD',label:'Hedef Tarih',f:r=>fmtD(r.dueD)},{k:'eff',label:'Kalan',f:remText,sv:r=>r.eff},{k:'trigger',label:'Kriter'},{k:'estDate',label:'Tahmini',f:r=>fmtD(r.estDate)}
+      ],list) : alertList(list)}</div></div>
+    <div class="grid" style="align-content:start">
+      <div class="card"><div class="card-h"><h3>WhatsApp Bildirimi</h3><span class="pill neutral">Tasarım önizlemesi</span></div>
+        <div class="card-b">
+          <div class="wa"><div class="wa-h"><div class="wa-av">MP</div><div><b>Makine Parkı Bildirim</b><div style="font-size:11px;opacity:.8">Otomatik sistem mesajı</div></div></div>
+            <div class="wa-b"><div class="wa-msg">${esc(msg).replace(/\*(.+?)\*/g,'<b>$1</b>')}<span class="tm">08:00 ✓✓</span></div>
+            ${act.length>1?`<div class="wa-msg">📋 Günlük özet: ${act.length} aktif uyarı (${act.filter(a=>a.level==='overdue').length} gecikmiş). Detaylar için sisteme giriş yapınız.<span class="tm">08:00 ✓✓</span></div>`:''}</div></div>
+        </div></div>
+      <div class="card"><div class="card-h"><h3>Gerçek Sistemde Bildirim Kuralları</h3></div>
+        <div class="card-b" style="font-size:13px">
+          <ul style="margin:0 0 10px;padding-left:18px;line-height:1.7">
+            <li><b>Gecikmiş</b> bakım → anında WhatsApp mesajı</li>
+            <li><b>Yaklaşan</b> bakım → her sabah 08:00 günlük özet</li>
+            <li>Alıcılar: ilgili <b>şube personeli</b> + <b>Makine Mühendisi</b></li>
+            <li>Yeni <b>arıza kaydı</b> ve <b>transfer çıkışı</b> → mühendise bilgi</li>
+          </ul>
+          ${top?`<div class="faint" style="font-size:12px">Bu uyarının alıcıları: ${esc(branchStaff?.full_name||'')} (${esc(branchStaff?.phone||'')}), ${esc(eng.full_name)} (${esc(eng.phone)})</div>`:''}
+          <div class="note" style="margin-top:10px">ℹ️ Bu demo sürümünde WhatsApp entegrasyonu yoktur. Gerçek sistemde mesajlar <b>WhatsApp Business API</b> üzerinden, <code>notifications</code> tablosundaki kuyruk kullanılarak gönderilecektir.</div>
+        </div></div>
+    </div>
+  </div>`;
+}
+
+function viewCompare(){
+  if(!isMgr()) return `<div class="card"><div class="empty">🔒 Bu ekran yalnızca Makine Mühendisi (yönetici) yetkisiyle görüntülenebilir.</div></div>`;
+  const data=DB.branches.map(b=>{const m=metricsFor(r=>r.branch_id===b.id); const mc=DB.machines.filter(x=>branchOfMachine(x)===b.id);
+    const al=IDX.maint.filter(x=>branchOfMachine(x.machine)===b.id && x.level!=='ok');
+    const cap=mc.length*(S.period==='all'?HIST_DAYS:+S.period)*10; // 10 sa/gün planlı kapasite varsayımı
+    return {b,m,machines:mc.length,projects:DB.projects.filter(p=>p.branch_id===b.id).length,alerts:al.length,overdue:al.filter(a=>a.level==='overdue').length,
+      avail: m.hours+m.downtime? m.hours/(m.hours+m.downtime)*100 : 100, util: cap? m.hours/cap*100:0};});
+  const best=(k,dir)=>{const v=data.map(d=>k(d)); return dir<0?Math.min(...v):Math.max(...v);};
+  const hl=(val,k,dir,fmt)=>{const b=best(k,dir); return val===b?`<b style="color:var(--ok)">${fmt(val)}</b>`:fmt(val);};
+  const rowsDef=[
+    ['Proje sayısı',d=>d.projects,n0],['Makine sayısı',d=>d.machines,n0],
+    ['Toplam çalışma saati',d=>d.m.hours,n0,1],['Kapasite kullanımı (%)',d=>d.util,n1,1],
+    ['Yakıt tüketimi (L)',d=>d.m.fuel,n0],['Yakıt verimi (L/saat)',d=>d.m.fuelPerH,n1,-1],['Tahmini yakıt maliyeti',d=>d.m.fuelCost,tl],
+    ['Yağ tüketimi (L)',d=>d.m.oil,n0],
+    ['Arıza onarım maliyeti',d=>d.m.costB,tl,-1],['Yağ + filtre maliyeti',d=>d.m.costO+d.m.costF,tl],['Toplam bakım maliyeti',d=>d.m.maint,tl,-1],
+    ['Bakım maliyeti / çalışma saati',d=>d.m.costPerH,tl,-1],['Arıza sayısı',d=>d.m.breakdowns,n0,-1],['Arıza / 1000 çalışma saati',d=>d.m.bdPer1000,n1,-1],
+    ['Toplam duruş (saat)',d=>d.m.downtime,n0,-1],['Erişilebilirlik (%)',d=>d.avail,n1,1],['Açık bakım uyarısı',d=>d.alerts,n0,-1]
+  ];
+  return `
+  <div class="card"><div class="card-h"><h3>Şube Karşılaştırma Tablosu</h3><span class="sub">${periodLabel()} · <span style="color:var(--ok);font-weight:700">yeşil</span> = en iyi değer</span></div>
+    <div class="card-b" style="padding:12px 0 0"><div class="tbl-wrap"><table>
+      <thead><tr><th>Gösterge</th>${data.map(d=>`<th class="n">${esc(d.b.name.replace(' Şubesi',''))}<div style="text-transform:none;font-weight:500;letter-spacing:0">${esc(d.b.region)}</div></th>`).join('')}<th class="n">Toplam / Ort.</th></tr></thead>
+      <tbody>${rowsDef.map(([l,k,fmt,dir])=>`<tr><td><b>${l}</b></td>${data.map(d=>`<td class="n">${dir?hl(k(d),k,dir,fmt):fmt(k(d))}</td>`).join('')}
+        <td class="n muted">${/(%|\/)/.test(l)?fmt(data.reduce((a,d)=>a+k(d),0)/data.length):fmt(data.reduce((a,d)=>a+k(d),0))}</td></tr>`).join('')}</tbody></table></div>
+      <div class="faint" style="padding:8px 16px;font-size:11.5px">Kapasite kullanımı: makine başına günlük 10 saat planlı çalışma varsayımıyla hesaplanmıştır. Erişilebilirlik = çalışma / (çalışma + arıza duruşu).</div></div></div>
+  <div class="grid g2">
+    <div class="card"><div class="card-h"><h3>Bakım Maliyeti / Çalışma Saati</h3><span class="sub">₺/sa — düşük olan iyi</span></div>
+      <div class="card-b">${hbar(data.map((d,i)=>({label:d.b.name.replace(' Şubesi',''),value:d.m.costPerH,color:PALETTE[i]})),v=>n0(v)+' ₺')}</div></div>
+    <div class="card"><div class="card-h"><h3>Yakıt Verimi</h3><span class="sub">L / çalışma saati</span></div>
+      <div class="card-b">${hbar(data.map((d,i)=>({label:d.b.name.replace(' Şubesi',''),value:d.m.fuelPerH,color:PALETTE[i]})),n1)}</div></div>
+    <div class="card"><div class="card-h"><h3>Arıza Sıklığı</h3><span class="sub">1000 çalışma saatinde arıza</span></div>
+      <div class="card-b">${hbar(data.map((d,i)=>({label:d.b.name.replace(' Şubesi',''),value:d.m.bdPer1000,color:PALETTE[i]})),n1)}</div></div>
+    <div class="card"><div class="card-h"><h3>Maliyet Dağılımı</h3><span class="sub">${periodLabel()}</span></div>
+      <div class="card-b">${stacked(data.map(d=>({label:d.b.name.replace(' Şubesi',''),parts:[d.m.costB,d.m.costO,d.m.costF]})),['Arıza onarım','Yağ','Filtre'],tl)}</div></div>
+  </div>`;
+}
+
+function viewMachines(){
+  const q=(S.q||'').toLocaleLowerCase('tr');
+  const data=visibleMachines().map(m=>{const al=IDX.maint.filter(x=>x.machine.id===m.id).sort((a,b)=>a.eff-b.eff)[0];
+    return {id:m.id,code:m.code,type:typeName(m),brand:m.brand+' '+m.model,year:m.model_year,branch:branchOfMachine(m),project:IDX.project[m.project_id].name,status:m.status,meter:IDX.meter[m.id],avg:IDX.avg[m.id],next:al};})
+    .filter(r=>!q || (r.code+' '+r.type+' '+r.brand+' '+r.project).toLocaleLowerCase('tr').includes(q));
+  return `<div class="card"><div class="card-h"><h3>Makine Envanteri</h3><span class="sub">${data.length} makine · kodlar şirket içi üretilir ve transferde değişmez</span></div>
+    <div class="toolbar" style="padding-top:12px"><input type="search" id="q" placeholder="Kod, tür, marka veya proje ara…" value="${esc(S.q||'')}"></div>
+    ${table('machines',[
+      {k:'code',label:'Kod',f:r=>`<span class="code">${esc(r.code)}</span>`},{k:'type',label:'Tür'},{k:'brand',label:'Marka / Model'},{k:'year',label:'Yıl',num:1},
+      ...(isMgr()?[{k:'branch',label:'Şube',f:r=>bName(r.branch)}]:[]),{k:'project',label:'Proje'},{k:'status',label:'Durum',f:r=>statusPill(r.status)},
+      {k:'meter',label:'Saat Sayacı',num:1,f:r=>n0(r.meter)},{k:'avg',label:'Ort. sa/gün',num:1,f:r=>n1(r.avg)},
+      {k:'next',label:'Sıradaki Bakım',sv:r=>r.next?r.next.eff:1e9,f:r=>r.next?`${levelPill(r.next)} <span class="muted">${esc(r.next.label)} · ${fmtD(r.next.estDate)}</span>`:'—'}
+    ],data,{rowAttr:r=>`class="click" data-action="machine" data-id="${r.id}"`})}</div>`;
+}
+
+function logView(title,sub,id,tableName,dateField,cols,addKind,extraFilter){
+  const mf=S.mf||''; let data=rows(tableName,dateField).filter(r=>!mf||r.machine_id==mf);
+  if(extraFilter) data=data.filter(extraFilter);
+  data.sort((a,b)=>a[dateField]<b[dateField]?1:-1);
+  const opts=visibleMachines().slice().sort((a,b)=>a.code<b.code?-1:1).map(m=>`<option value="${m.id}" ${mf==m.id?'selected':''}>${esc(m.code)} — ${esc(typeName(m))}</option>`).join('');
+  return `<div class="card"><div class="card-h"><h3>${title}</h3><span class="sub">${sub} · ${periodLabel()} · ${n0(data.length)} kayıt</span>
+    <button class="btn sm primary r" data-action="new-record" data-kind="${addKind}">＋ Yeni kayıt</button></div>
+    <div class="toolbar" style="padding-top:12px"><select id="mf"><option value="">Tüm makineler</option>${opts}</select></div>
+    ${table(id,cols(data),data)}</div>`;
+}
+const baseCols = () => [{k:'machine_id',label:'Makine',sv:r=>IDX.machine[r.machine_id].code,f:r=>mLink(r.machine_id)},{k:'type',label:'Tür',nosort:1,f:r=>esc(typeName(IDX.machine[r.machine_id]))},
+  ...(isMgr()?[{k:'branch_id',label:'Şube',f:r=>bName(r.branch_id)}]:[]),{k:'project_id',label:'Proje',f:r=>pName(r.project_id)}];
+
+function viewFuel(){ return logView('Yakıt İkmal Kayıtları','Tarih, saat ve miktar','fuel','fuel_logs','logged_at',data=>[
+  {k:'logged_at',label:'Tarih / Saat',f:r=>fmtDT(r.logged_at)},...baseCols(),{k:'liters',label:'Miktar (L)',num:1,f:r=>n0(r.liters)},
+  {k:'unit_price',label:'Birim Fiyat',num:1,f:r=>NF1.format(r.unit_price)+' ₺'},{k:'total',label:'Tutar',num:1,sv:r=>r.liters*r.unit_price,f:r=>tl(r.liters*r.unit_price)}],'fuel'); }
+function viewOil(){ return logView('Yağ Kayıtları','Değişim ve ilave işlemleri','oil','oil_logs','logged_at',data=>[
+  {k:'logged_at',label:'Tarih / Saat',f:r=>fmtDT(r.logged_at)},...baseCols(),
+  {k:'operation',label:'İşlem',f:r=>r.operation==='DEGISIM'?'<span class="pill info">Değişim</span>':'<span class="pill neutral">İlave</span>'},
+  {k:'oil_type',label:'Yağ Türü'},{k:'liters',label:'Miktar (L)',num:1,f:r=>n1(r.liters)},{k:'hour_meter',label:'Sayaç',num:1,f:r=>n0(r.hour_meter)},
+  {k:'next_due_hours',label:'Sonraki (sa)',num:1,f:r=>r.next_due_hours?n0(r.next_due_hours):'—'},{k:'next_due_date',label:'Sonraki (tarih)',f:r=>fmtD(r.next_due_date)},
+  {k:'cost',label:'Maliyet',num:1,f:r=>tl(r.cost)}],'oil'); }
+function viewFilters(){ return logView('Filtre Değişim Kayıtları','Periyot hem saat hem tarih olarak tanımlıdır; sonraki değişim otomatik hesaplanır','filters','filter_logs','changed_at',data=>[
+  {k:'changed_at',label:'Son Değişim',f:r=>fmtDT(r.changed_at)},...baseCols(),{k:'filter_type',label:'Filtre',f:r=>esc(FILTER_TYPES[r.filter_type].label)},
+  {k:'hour_meter',label:'Sayaç',num:1,f:r=>n0(r.hour_meter)},{k:'interval',label:'Periyot',nosort:1,f:r=>`${n0(r.interval_h)} sa / ${r.interval_d} gün`},
+  {k:'next_due_hours',label:'Sonraki (sa)',num:1,f:r=>n0(r.next_due_hours)},{k:'next_due_date',label:'Sonraki (tarih)',f:r=>fmtD(r.next_due_date)},
+  {k:'est',label:'Tahmini Değişim',nosort:1,f:r=>{const x=IDX.maint.find(z=>z.log===r||(z.kind==='filter'&&z.log.id===r.id)); return x?`${fmtD(x.estDate)} ${levelPill(x)}`:'<span class="faint">Geçmiş kayıt</span>';}},
+  {k:'cost',label:'Maliyet',num:1,f:r=>tl(r.cost)}],'filter'); }
+function viewHours(){
+  const mf=S.mf||''; const data=rows('operating_hours','work_date').filter(r=>!mf||r.machine_id==mf);
+  // makine x gün matrisi (son 14 gün)
+  const days=[...Array(14)].map((_,i)=>isoD(addDays(TODAY,-13+i)));
+  const by=groupBy(rows('operating_hours','work_date',{allTime:true}).filter(r=>r.work_date>=days[0]),r=>r.machine_id+'|'+r.work_date);
+  const ms=visibleMachines().filter(m=>!mf||m.id==mf).sort((a,b)=>a.code<b.code?-1:1);
+  const heat=v=>v?`background:color-mix(in srgb,var(--c3) ${Math.round(15+v/14*75)}%,transparent);`:'';
+  return `<div class="card"><div class="card-h"><h3>Son 14 Gün — Günlük Çalışma Saatleri</h3><span class="sub">makine × gün</span></div>
+    <div class="card-b" style="padding:12px 0 0"><div class="tbl-wrap"><table><thead><tr><th>Makine</th>${days.map(d=>`<th class="n">${d.slice(8)}.${d.slice(5,7)}</th>`).join('')}<th class="n">Toplam</th><th class="n">Sayaç</th></tr></thead>
+    <tbody>${ms.map(m=>{let t=0; return `<tr><td>${mLink(m.id)} <span class="faint">${esc(typeName(m))}</span></td>${days.map(d=>{const v=(by[m.id+'|'+d]||[])[0]?.hours||0; t+=v; return `<td class="n" style="${heat(v)}">${v?n1(v):'<span class="faint">·</span>'}</td>`;}).join('')}<td class="n"><b>${n1(t)}</b></td><td class="n">${n0(IDX.meter[m.id])}</td></tr>`;}).join('')}</tbody></table></div></div></div>
+  ${logView('Çalışma Saati Kayıtları','Günlük giriş','hours','operating_hours','work_date',d=>[
+    {k:'work_date',label:'Tarih',f:r=>fmtD(r.work_date)},...baseCols(),{k:'hours',label:'Çalışma (sa)',num:1,f:r=>n1(r.hours)},
+    {k:'recorded_by',label:'Kaydeden',f:r=>esc(IDX.user[r.recorded_by]?.full_name)}],'hours')}`;
+}
+function viewBreakdowns(){
+  const bd=rows('breakdown_logs','occurred_at');
+  const byPart=Object.entries(groupBy(bd,b=>b.part)).map(([k,v])=>({label:k,value:v.length})).sort((a,b)=>b.value-a.value).slice(0,8);
+  const byCause=Object.entries(groupBy(bd,b=>b.cause)).map(([k,v])=>({label:k,value:v.length})).sort((a,b)=>b.value-a.value).slice(0,8);
+  const repeat=Object.entries(groupBy(bd,b=>b.machine_id)).map(([k,v])=>({label:IDX.machine[k].code,value:v.length})).filter(x=>x.value>1).sort((a,b)=>b.value-a.value).slice(0,8);
+  const now=new Date();
+  return `<div class="grid g3">
+    <div class="card"><div class="card-h"><h3>Parçaya Göre</h3><span class="sub">arıza adedi</span></div><div class="card-b">${hbar(byPart,v=>v+' kez','var(--c5)')}</div></div>
+    <div class="card"><div class="card-h"><h3>Nedene Göre</h3><span class="sub">arıza adedi</span></div><div class="card-b">${hbar(byCause,v=>v+' kez','var(--c4)')}</div></div>
+    <div class="card"><div class="card-h"><h3>Tekrarlayan Arızalar</h3><span class="sub">birden fazla arızası olan makineler</span></div><div class="card-b">${hbar(repeat,v=>v+' kez','var(--c2)')}</div></div>
+  </div>
+  ${logView('Arıza Kayıtları','Parça, neden, duruş süresi ve maliyet','bd','breakdown_logs','occurred_at',d=>[
+    {k:'occurred_at',label:'Arıza Zamanı',f:r=>fmtDT(r.occurred_at)},...baseCols(),{k:'part',label:'Arızalı Parça',f:r=>`<b>${esc(r.part)}</b>`},{k:'cause',label:'Neden'},
+    {k:'part_last_replaced_at',label:'Parça Son Değişim',f:r=>r.part_last_replaced_at?`${fmtD(r.part_last_replaced_at)} <span class="faint">(${daysBetween(r.part_last_replaced_at,r.occurred_at.slice(0,10))} gün önce)</span>`:'<span class="faint">Bilinmiyor</span>'},
+    {k:'downtime_hours',label:'Duruş (sa)',num:1,sv:r=>r.downtime_hours??1e9,f:r=>r.status==='ACIK'?`<span style="color:var(--bad-2)">${n0((now-parseD(r.occurred_at))/3600e3)}+</span>`:n1(r.downtime_hours)},
+    {k:'cost',label:'Maliyet',num:1,f:r=>tl(r.cost)},
+    {k:'status',label:'Durum',f:r=>r.status==='ACIK'?`<span class="pill bad">Açık</span> <button class="btn sm" data-action="close-bd" data-id="${r.id}">Giderildi</button>`:'<span class="pill ok">Giderildi</span>'}],'breakdown')}`;
+}
+function viewTransfers(){
+  const data=DB.transfer_logs.filter(t=>inScope(t.from_branch_id)||inScope(t.to_branch_id)).sort((a,b)=>a.checkout_at<b.checkout_at?1:-1);
+  const transit=data.filter(t=>!t.checkin_at);
+  return `<div class="card"><div class="card-h"><h3>Makine Transferleri</h3><span class="sub">Çıkış (check-out) kaynak şubede, giriş (check-in) hedef şubede yapılır</span>
+    <button class="btn sm primary r" data-action="new-record" data-kind="transfer">＋ Transfer çıkışı</button></div>
+    <div class="card-b"><div class="kpis" style="margin-bottom:12px">
+      <div class="card kpi"><div class="l">Toplam transfer</div><div class="v">${data.length}</div></div>
+      <div class="card kpi"><div class="l">Yolda (giriş bekliyor)</div><div class="v" style="color:var(--info)">${transit.length}</div></div>
+    </div></div>
+    ${table('transfers',[
+      {k:'machine_id',label:'Makine',sv:r=>IDX.machine[r.machine_id].code,f:r=>mLink(r.machine_id)},
+      {k:'from',label:'Kaynak',sv:r=>r.from_branch_id,f:r=>`<b>${bName(r.from_branch_id)}</b><div class="faint">${pName(r.from_project_id)}</div>`},
+      {k:'arrow',label:'',nosort:1,f:()=>'→'},
+      {k:'to',label:'Hedef',sv:r=>r.to_branch_id,f:r=>`<b>${bName(r.to_branch_id)}</b><div class="faint">${pName(r.to_project_id)}</div>`},
+      {k:'checkout_at',label:'Çıkış (Check-out)',f:r=>`${fmtDT(r.checkout_at)}<div class="faint">${esc(IDX.user[r.checkout_by]?.full_name)}</div>`},
+      {k:'checkin_at',label:'Giriş (Check-in)',f:r=>r.checkin_at?`${fmtDT(r.checkin_at)}<div class="faint">${esc(IDX.user[r.checkin_by]?.full_name)}</div>`:
+        (inScope(r.to_branch_id)?`<button class="btn sm accent" data-action="checkin" data-id="${r.id}">Girişi onayla</button>`:'<span class="pill info">Yolda</span>')},
+      {k:'dur',label:'Yolda Süre',nosort:1,f:r=>{const h=((r.checkin_at?parseD(r.checkin_at):new Date())-parseD(r.checkout_at))/3600e3; return `${n0(h)} sa`;}},
+      {k:'note',label:'Not',f:r=>`<span class="muted">${esc(r.note)}</span>`}
+    ],data)}</div>`;
+}
+
+function viewSchema(){
+  const ddl=Object.entries(SCHEMA).map(([t,def])=>{
+    const lines=def.cols.map(([c,ty,cons])=>{
+      if(!c) return `  ${cons}`;
+      let sql=`  ${c} ${ty}`; const cs=cons||'';
+      if(cs==='PK') sql+=' PRIMARY KEY';
+      else { const fk=cs.match(/FK (\w+)\((\w+)\)/); if(fk) sql+=` REFERENCES ${fk[1]}(${fk[2]})`;
+        if(/NOT NULL/.test(cs)) sql+=' NOT NULL'; if(/^UNIQUE/.test(cs)) sql+=' UNIQUE';
+        const ck=cs.match(/CHECK \((.+)\)/); if(ck) sql+=` CHECK (${ck[1]})`; const df=cs.match(/DEFAULT (\S+)/); if(df) sql+=` DEFAULT ${df[1]}`; }
+      const cm=cs.replace(/^(PK|FK \w+\(\w+\)|UNIQUE NOT NULL|NOT NULL|UNIQUE)\s*(—\s*)?/,'').replace(/^(NOT NULL|UNIQUE)\s*(—\s*)?/,'');
+      return sql+(cm&&!/^CHECK|^DEFAULT/.test(cm)?`  -- ${cm}`:'');
+    });
+    return `-- ${def.desc}\nCREATE TABLE ${t} (\n${lines.map((l,i)=>{const [code,comment]=l.split('  -- '); return code+(i<lines.length-1?',':'')+(comment?'  -- '+comment:'');}).join('\n')}\n);`;
+  }).join('\n\n')+`\n\n-- Performans indeksleri\nCREATE INDEX ON fuel_logs (machine_id, logged_at);\nCREATE INDEX ON oil_logs (machine_id, logged_at);\nCREATE INDEX ON filter_logs (machine_id, filter_type, changed_at);\nCREATE INDEX ON operating_hours (branch_id, work_date);\nCREATE INDEX ON breakdown_logs (machine_id, occurred_at);\n\n-- Şube personeli yetkisi (Row Level Security örneği)\nALTER TABLE fuel_logs ENABLE ROW LEVEL SECURITY;\nCREATE POLICY sube_kapsami ON fuel_logs\n  USING (current_setting('app.role') = 'MUHENDIS'\n         OR branch_id = current_setting('app.branch_id')::int);`;
+  const counts=Object.keys(SCHEMA).map(t=>[t,(DB[t]||[]).length]);
+  return `<div class="card"><div class="card-h"><h3>Gömülü Veritabanı</h3><span class="sub">JavaScript dizileri + localStorage · ${counts.reduce((a,c)=>a+c[1],0).toLocaleString('tr-TR')} satır</span>
+      <span class="r row-actions"><button class="btn sm" data-action="export">JSON dışa aktar</button><button class="btn sm" data-action="copy-ddl">SQL'i kopyala</button><button class="btn sm" data-action="reset">Demo verisini sıfırla</button></span></div>
+    <div class="card-b"><div class="note">Veri modeli PostgreSQL'e birebir taşınabilecek şekilde tasarlanmıştır: her tablo bir JS dizisidir, her satır bir nesnedir, ilişkiler <code>*_id</code> yabancı anahtarları ile kurulur.
+      Kayıt tablolarında <code>branch_id</code> / <code>project_id</code> <b>kayıt anındaki</b> konumu saklar; böylece transfer edilen bir makinenin geçmiş maliyetleri eski şubede kalır. Şube bazlı yetki, gerçek sistemde Row Level Security ile uygulanabilir.</div></div>
+    <div class="card-b" style="padding-top:0"><div class="schema-grid">${Object.entries(SCHEMA).map(([t,def])=>`<div class="schema-card"><h4><span>${t}</span><span style="opacity:.8;font-weight:500">${n0((DB[t]||[]).length)} satır</span></h4>
+      <div class="faint" style="padding:6px 12px;font-size:11.5px">${esc(def.desc)}</div><table>${def.cols.filter(c=>c[0]).map(([c,ty,cs])=>`<tr><td><b>${c}</b> ${/^PK/.test(cs)?'<span class="k">PK</span>':/FK/.test(cs)?'<span class="k">FK</span>':''}</td><td class="muted">${ty}</td></tr>`).join('')}</table></div>`).join('')}</div></div>
+    <div class="card-b"><h3 style="margin:0 0 8px;font-size:14px">PostgreSQL DDL (otomatik üretildi)</h3><pre class="ddl" id="ddl">${esc(ddl)}</pre></div></div>`;
+}
+
+/* ------------------------ 11. MAKİNE DETAYI ------------------------ */
+function openMachine(id){
+  const m=IDX.machine[id]; const t=IDX.type[m.type_id];
+  const f=r=>r.machine_id===id;
+  const items=IDX.maint.filter(x=>x.machine.id===id).sort((a,b)=>a.eff-b.eff);
+  const all=r=>DB[r].filter(f);
+  const fu=all('fuel_logs'), ol=all('oil_logs'), fl=all('filter_logs'), bd=all('breakdown_logs'), oh=all('operating_hours'), tr=DB.transfer_logs.filter(f);
+  const scopeNote = !inScope(branchOfMachine(m)) ? '<div class="note">Bu makine şubenize transfer sürecindedir.</div>':'';
+  const tab=S.mtab||'maint';
+  const tabs=[['maint','Bakım Planı'],['fuel','Yakıt ('+fu.length+')'],['oil','Yağ ('+ol.length+')'],['filter','Filtre ('+fl.length+')'],['bd','Arıza ('+bd.length+')'],['tr','Transfer ('+tr.length+')']];
+  const desc=(a,k)=>a.slice().sort((x,y)=>x[k]<y[k]?1:-1);
+  const vis=r=>inScope(r.branch_id);
+  let body='';
+  if(tab==='maint') body=table('mMaint',[{k:'label',label:'Kalem'},{k:'level',label:'Durum',f:levelPill},{k:'last',label:'Son İşlem',nosort:1,f:r=>fmtDT(r.log.logged_at||r.log.changed_at)},
+    {k:'int',label:'Periyot',nosort:1,f:r=>`${n0(r.log.interval_h)} sa / ${r.log.interval_d} gün`},{k:'dueH',label:'Hedef Saat',num:1,f:r=>n0(r.dueH)},{k:'dueD',label:'Hedef Tarih',f:r=>fmtD(r.dueD)},
+    {k:'eff',label:'Kalan',f:remText},{k:'trigger',label:'Kriter'},{k:'estDate',label:'Tahmini',f:r=>fmtD(r.estDate)}],items);
+  if(tab==='fuel') body=table('mFuel',[{k:'logged_at',label:'Tarih / Saat',f:r=>fmtDT(r.logged_at)},{k:'branch_id',label:'Şube',f:r=>bName(r.branch_id)},{k:'liters',label:'Litre',num:1,f:r=>n0(r.liters)}],desc(fu.filter(vis),'logged_at'),{limit:60});
+  if(tab==='oil') body=table('mOil',[{k:'logged_at',label:'Tarih / Saat',f:r=>fmtDT(r.logged_at)},{k:'operation',label:'İşlem',f:r=>r.operation==='DEGISIM'?'Değişim':'İlave'},{k:'oil_type',label:'Tür'},{k:'liters',label:'Litre',num:1,f:r=>n1(r.liters)},{k:'hour_meter',label:'Sayaç',num:1,f:r=>n0(r.hour_meter)},{k:'cost',label:'Maliyet',num:1,f:r=>tl(r.cost)}],desc(ol.filter(vis),'logged_at'));
+  if(tab==='filter') body=table('mFil',[{k:'changed_at',label:'Değişim',f:r=>fmtDT(r.changed_at)},{k:'filter_type',label:'Filtre',f:r=>FILTER_TYPES[r.filter_type].label},{k:'hour_meter',label:'Sayaç',num:1,f:r=>n0(r.hour_meter)},{k:'next_due_hours',label:'Sonraki (sa)',num:1,f:r=>n0(r.next_due_hours)},{k:'next_due_date',label:'Sonraki (tarih)',f:r=>fmtD(r.next_due_date)},{k:'cost',label:'Maliyet',num:1,f:r=>tl(r.cost)}],desc(fl.filter(vis),'changed_at'));
+  if(tab==='bd') body=table('mBd',[{k:'occurred_at',label:'Zaman',f:r=>fmtDT(r.occurred_at)},{k:'part',label:'Parça'},{k:'cause',label:'Neden'},{k:'part_last_replaced_at',label:'Parça Son Değişim',f:r=>fmtD(r.part_last_replaced_at)},{k:'downtime_hours',label:'Duruş (sa)',num:1,f:r=>r.status==='ACIK'?'Devam ediyor':n1(r.downtime_hours)},{k:'cost',label:'Maliyet',num:1,f:r=>tl(r.cost)}],desc(bd.filter(vis),'occurred_at'),{empty:'Arıza kaydı yok.'});
+  if(tab==='tr') body=table('mTr',[{k:'checkout_at',label:'Çıkış',f:r=>fmtDT(r.checkout_at)},{k:'from',label:'Kaynak',nosort:1,f:r=>bName(r.from_branch_id)+' · '+pName(r.from_project_id)},{k:'to',label:'Hedef',nosort:1,f:r=>bName(r.to_branch_id)+' · '+pName(r.to_project_id)},{k:'checkin_at',label:'Giriş',f:r=>r.checkin_at?fmtDT(r.checkin_at):'<span class="pill info">Yolda</span>'}],desc(tr,'checkout_at'),{empty:'Transfer kaydı yok.'});
+  const visFu=fu.filter(vis), visBd=bd.filter(vis), visOl=ol.filter(vis), visFl=fl.filter(vis), visOh=oh.filter(vis);
+  openModal(`<div class="modal-h"><span class="code" style="font-size:16px">${esc(m.code)}</span><h2>${esc(t.name)} · ${esc(m.brand)} ${esc(m.model)}</h2>${statusPill(m.status)}
+    <button class="btn ghost x" data-action="close">✕</button></div>
+    <div class="modal-b">${scopeNote}
+      <div class="info-grid">
+        <div><b>Şube</b>${bName(branchOfMachine(m))}</div><div><b>Proje</b>${pName(m.project_id)}</div>
+        <div><b>Saat Sayacı</b>${n0(IDX.meter[id])} sa</div><div><b>Ort. Günlük Çalışma (14 gün)</b>${n1(IDX.avg[id])} sa</div>
+        <div><b>Model Yılı</b>${m.model_year}</div><div><b>Toplam Yakıt (tüm kayıtlar)</b>${n0(sum(visFu,'liters'))} L</div>
+        <div><b>Toplam Arıza</b>${visBd.length} · ${tl(sum(visBd,'cost'))}</div><div><b>Toplam Bakım Maliyeti</b>${tl(sum(visBd,'cost')+sum(visOl,'cost')+sum(visFl,'cost'))}</div>
+      </div>
+      <div class="tabs">${tabs.map(([k,l])=>`<button class="tab ${tab===k?'active':''}" data-mtab="${k}" data-id="${id}">${l}</button>`).join('')}</div>
+      <div>${body}</div>
+    </div>
+    <div class="modal-f"><button class="btn" data-action="new-record" data-kind="fuel" data-mid="${id}">Yakıt ekle</button><button class="btn" data-action="new-record" data-kind="hours" data-mid="${id}">Çalışma saati</button>
+      <button class="btn" data-action="new-record" data-kind="breakdown" data-mid="${id}">Arıza bildir</button><button class="btn primary" data-action="close">Kapat</button></div>`);
+  S._openMachine=id;
+}
+
+/* ------------------------ 12. KAYIT FORMLARI ------------------------ */
+const FORM_KINDS = {fuel:'Yakıt İkmali',oil:'Yağ Değişimi / İlave',filter:'Filtre Değişimi',hours:'Günlük Çalışma Saati',breakdown:'Arıza Kaydı',transfer:'Transfer Çıkışı (Check-out)'};
+function openForm(kind='fuel',mid){
+  const ms=visibleMachines().filter(m=>inScope(branchOfMachine(m))).sort((a,b)=>a.code<b.code?-1:1);
+  const nowS=isoDT(new Date());
+  const mSel=`<div class="fld full"><label>Makine *</label><select name="machine_id" required>${ms.map(m=>`<option value="${m.id}" ${m.id==mid?'selected':''}>${esc(m.code)} — ${esc(typeName(m))} · ${esc(IDX.project[m.project_id].name)}</option>`).join('')}</select></div>`;
+  const F={
+    fuel:`${mSel}<div class="fld"><label>Tarih / Saat *</label><input type="datetime-local" name="logged_at" value="${nowS}" required></div>
+      <div class="fld"><label>Miktar (litre) *</label><input type="number" name="liters" min="1" step="0.1" required></div>
+      <div class="fld"><label>Birim fiyat (₺/L)</label><input type="number" name="unit_price" step="0.01" value="47.10"></div>`,
+    oil:`${mSel}<div class="fld"><label>İşlem *</label><select name="operation"><option value="DEGISIM">Değişim</option><option value="ILAVE">İlave (takviye)</option></select></div>
+      <div class="fld"><label>Yağ türü</label><select name="oil_type">${OIL_TYPES.map(o=>`<option>${o}</option>`).join('')}</select></div>
+      <div class="fld"><label>Tarih / Saat *</label><input type="datetime-local" name="logged_at" value="${nowS}" required></div>
+      <div class="fld"><label>Miktar (litre) *</label><input type="number" name="liters" min="0.5" step="0.1" required></div>
+      <div class="fld"><label>Saat sayacı</label><input type="number" name="hour_meter" step="1"><span class="hint">Boş bırakılırsa mevcut sayaç kullanılır</span></div>
+      <div class="fld"><label>Maliyet (₺)</label><input type="number" name="cost" step="1" value="0"></div>
+      <div class="fld"><label>Periyot (saat)</label><input type="number" name="interval_h" value="250"></div>
+      <div class="fld"><label>Periyot (gün)</label><input type="number" name="interval_d" value="90"></div>
+      <div class="fld full"><div class="calc" id="calc"></div></div>`,
+    filter:`${mSel}<div class="fld"><label>Filtre türü *</label><select name="filter_type">${Object.entries(FILTER_TYPES).map(([k,f])=>`<option value="${k}">${f.label}</option>`).join('')}</select></div>
+      <div class="fld"><label>Değişim tarihi / saati *</label><input type="datetime-local" name="changed_at" value="${nowS}" required></div>
+      <div class="fld"><label>Saat sayacı</label><input type="number" name="hour_meter" step="1"><span class="hint">Boş bırakılırsa mevcut sayaç kullanılır</span></div>
+      <div class="fld"><label>Maliyet (₺)</label><input type="number" name="cost" value="0"></div>
+      <div class="fld"><label>Periyot (saat) *</label><input type="number" name="interval_h" value="250" required></div>
+      <div class="fld"><label>Periyot (gün) *</label><input type="number" name="interval_d" value="90" required></div>
+      <div class="fld full"><div class="calc" id="calc"></div></div>`,
+    hours:`${mSel}<div class="fld"><label>Tarih *</label><input type="date" name="work_date" value="${isoD(TODAY)}" max="${isoD(TODAY)}" required></div>
+      <div class="fld"><label>Çalışma süresi (saat) *</label><input type="number" name="hours" min="0" max="24" step="0.5" required></div>`,
+    breakdown:`${mSel}<div class="fld"><label>Arızalanan parça *</label><input name="part" list="partsList" required><datalist id="partsList">${Object.keys(PARTS).map(p=>`<option value="${p}">`).join('')}</datalist></div>
+      <div class="fld"><label>Arıza nedeni *</label><input name="cause" list="causeList" required><datalist id="causeList">${CAUSES.map(p=>`<option value="${p}">`).join('')}</datalist></div>
+      <div class="fld"><label>Arıza tarihi / saati *</label><input type="datetime-local" name="occurred_at" value="${nowS}" required></div>
+      <div class="fld"><label>Parçanın son değişim tarihi</label><input type="date" name="part_last_replaced_at"><span class="hint" id="lastHint">Geçmiş kayıtlardan otomatik önerilir</span></div>
+      <div class="fld"><label>Fiili duruş süresi (saat)</label><input type="number" name="downtime_hours" step="0.5"><span class="hint">Boş = arıza hâlâ açık</span></div>
+      <div class="fld"><label>Onarım / parça maliyeti (₺) *</label><input type="number" name="cost" min="0" required></div>
+      <div class="fld full"><label>Açıklama</label><textarea name="description" rows="2"></textarea></div>`,
+    transfer:`<div class="fld full"><label>Makine *</label><select name="machine_id" required>${ms.filter(m=>m.status!=='TRANSFERDE').map(m=>`<option value="${m.id}" ${m.id==mid?'selected':''}>${esc(m.code)} — ${esc(typeName(m))} · ${esc(IDX.project[m.project_id].name)}</option>`).join('')}</select></div>
+      <div class="fld full"><label>Hedef proje (şube) *</label><select name="to_project_id">${DB.branches.map(b=>`<optgroup label="${esc(b.name)}">${DB.projects.filter(p=>p.branch_id===b.id).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</optgroup>`).join('')}</select></div>
+      <div class="fld"><label>Çıkış tarihi / saati *</label><input type="datetime-local" name="checkout_at" value="${nowS}" required></div>
+      <div class="fld"><label>Not</label><input name="note" placeholder="Sevk bilgisi, nakliye vb."></div>
+      <div class="fld full"><div class="note">Çıkış onaylandığında makine "Transferde" durumuna geçer. Hedef şube personeli <b>Girişi onayla</b> ile teslim aldığında makine yeni projeye bağlanır.</div></div>`
+  };
+  openModal(`<form id="recForm" data-kind="${kind}"><div class="modal-h"><h2>Yeni Kayıt</h2><button type="button" class="btn ghost x" data-action="close">✕</button></div>
+    <div class="modal-b"><div class="tabs">${Object.entries(FORM_KINDS).map(([k,l])=>`<button type="button" class="tab ${k===kind?'active':''}" data-fkind="${k}" data-mid="${mid||''}">${l.split(' (')[0]}</button>`).join('')}</div>
+      ${ms.length?`<div class="form-grid">${F[kind]}</div>`:'<div class="empty">Kayıt girebileceğiniz makine yok.</div>'}
+      <div class="faint" style="font-size:12px">Kaydeden: ${esc(currentUser().full_name)}</div></div>
+    <div class="modal-f"><button type="button" class="btn" data-action="close">Vazgeç</button><button class="btn primary" type="submit">Kaydet</button></div></form>`,true);
+  formDefaults();
+}
+function formDefaults(){
+  const fm=document.getElementById('recForm'); if(!fm) return; const kind=fm.dataset.kind; const g=n=>fm.elements[n];
+  const m=IDX.machine[g('machine_id')?.value]; if(!m) return; const t=IDX.type[m.type_id];
+  if(kind==='filter' && g('filter_type')){ const ft=FILTER_TYPES[g('filter_type').value]; g('interval_h').value= g('filter_type').value==='MOTOR_YAG'?t.oil_interval_h:ft.h; g('interval_d').value=g('filter_type').value==='MOTOR_YAG'?t.oil_interval_d:ft.d; }
+  if(kind==='oil'){ g('interval_h').value=t.oil_interval_h; g('interval_d').value=t.oil_interval_d; if(!g('liters').value && g('operation').value==='DEGISIM') g('liters').value=t.oil_capacity_l; }
+  if(kind==='breakdown') suggestLast();
+  updateCalc();
+}
+function suggestLast(){
+  const fm=document.getElementById('recForm'); const mid=+fm.elements.machine_id.value, part=fm.elements.part.value.trim();
+  const prev=DB.breakdown_logs.filter(b=>b.machine_id===mid && b.part.toLocaleLowerCase('tr')===part.toLocaleLowerCase('tr')).sort((a,b)=>a.occurred_at<b.occurred_at?-1:1).pop();
+  const h=document.getElementById('lastHint');
+  if(prev){ fm.elements.part_last_replaced_at.value=prev.occurred_at.slice(0,10); h.textContent='Önceki arıza kaydından otomatik dolduruldu ('+fmtD(prev.occurred_at)+')'; }
+  else h.textContent='Bu parça için sistemde önceki kayıt yok — biliniyorsa giriniz';
+}
+function updateCalc(){
+  const fm=document.getElementById('recForm'); const c=document.getElementById('calc'); if(!fm||!c) return; const g=n=>fm.elements[n];
+  const m=IDX.machine[g('machine_id').value]; if(!m) return;
+  if(g('operation') && g('operation').value==='ILAVE'){ c.innerHTML='İlave işlemi bakım periyodunu sıfırlamaz; yalnızca tüketim olarak raporlanır.'; return; }
+  const hm=+g('hour_meter').value||IDX.meter[m.id]; const dt=g('logged_at')?.value||g('changed_at')?.value; const ih=+g('interval_h').value, id_=+g('interval_d').value;
+  if(!dt||!ih||!id_){c.textContent='';return;}
+  const dueD=addDays(parseD(dt.slice(0,10)),id_); const avg=IDX.avg[m.id]; const byH=avg>0.2?addDays(parseD(dt.slice(0,10)),Math.floor(ih/avg)):null;
+  const est= byH && byH<dueD ? byH : dueD;
+  c.innerHTML=`<b>Otomatik hesaplama →</b> Sonraki değişim: <b>${n0(hm+ih)} sa</b> sayaç değerinde <i>veya</i> <b>${fmtD(isoD(dueD))}</b> tarihinde.<br>
+    Ortalama ${n1(avg)} sa/gün kullanımla tahmini değişim tarihi: <b>${fmtD(isoD(est))}</b> (belirleyici: ${byH&&byH<dueD?'saat':'tarih'}).`;
+}
+function submitForm(fm){
+  const kind=fm.dataset.kind; const v=Object.fromEntries(new FormData(fm).entries()); const u=currentUser();
+  const m=IDX.machine[v.machine_id]; if(!m) return;
+  const loc={branch_id:branchOfMachine(m),project_id:m.project_id,recorded_by:u.id};
+  const num=x=>x===''||x==null?null:+x;
+  if(kind==='fuel') DB.fuel_logs.push({id:nextId('fuel_logs'),machine_id:m.id,...loc,logged_at:v.logged_at,liters:num(v.liters),unit_price:num(v.unit_price)||0});
+  if(kind==='hours'){
+    if(DB.operating_hours.some(r=>r.machine_id===m.id&&r.work_date===v.work_date)){ const r=DB.operating_hours.find(r=>r.machine_id===m.id&&r.work_date===v.work_date); r.hours=num(v.hours); toast('Bu tarih için mevcut kayıt güncellendi.'); }
+    else DB.operating_hours.push({id:nextId('operating_hours'),machine_id:m.id,...loc,work_date:v.work_date,hours:num(v.hours)});
+  }
+  if(kind==='oil'){ const hm=num(v.hour_meter)??Math.round(IDX.meter[m.id]); const ch=v.operation==='DEGISIM';
+    DB.oil_logs.push({id:nextId('oil_logs'),machine_id:m.id,...loc,logged_at:v.logged_at,operation:v.operation,oil_type:v.oil_type,liters:num(v.liters),hour_meter:hm,
+      interval_h:ch?num(v.interval_h):null,interval_d:ch?num(v.interval_d):null,next_due_hours:ch?hm+num(v.interval_h):null,
+      next_due_date:ch?isoD(addDays(parseD(v.logged_at.slice(0,10)),num(v.interval_d))):null,cost:num(v.cost)||0}); }
+  if(kind==='filter'){ const hm=num(v.hour_meter)??Math.round(IDX.meter[m.id]);
+    DB.filter_logs.push({id:nextId('filter_logs'),machine_id:m.id,...loc,filter_type:v.filter_type,changed_at:v.changed_at,hour_meter:hm,interval_h:num(v.interval_h),interval_d:num(v.interval_d),
+      next_due_hours:hm+num(v.interval_h),next_due_date:isoD(addDays(parseD(v.changed_at.slice(0,10)),num(v.interval_d))),cost:num(v.cost)||0}); }
+  if(kind==='breakdown'){ const open=v.downtime_hours==='';
+    DB.breakdown_logs.push({id:nextId('breakdown_logs'),machine_id:m.id,...loc,part:v.part.trim(),cause:v.cause.trim(),description:v.description,occurred_at:v.occurred_at,
+      part_last_replaced_at:v.part_last_replaced_at||null,downtime_hours:open?null:num(v.downtime_hours),cost:num(v.cost)||0,status:open?'ACIK':'GIDERILDI',
+      resolved_at:open?null:isoDT(new Date(parseD(v.occurred_at).getTime()+num(v.downtime_hours)*3600e3))});
+    if(open) m.status='ARIZALI'; }
+  if(kind==='transfer'){ const to=IDX.project[v.to_project_id];
+    if(+v.to_project_id===m.project_id){ toast('Hedef proje mevcut projeden farklı olmalıdır.'); return; }
+    DB.transfer_logs.push({id:nextId('transfer_logs'),machine_id:m.id,from_project_id:m.project_id,from_branch_id:branchOfMachine(m),to_project_id:to.id,to_branch_id:to.branch_id,
+      checkout_at:v.checkout_at,checkout_by:u.id,checkin_at:null,checkin_by:null,note:v.note||''});
+    m.status='TRANSFERDE'; }
+  saveDB(); closeModal(); toast(`✓ ${FORM_KINDS[kind]} kaydedildi.`); render();
+}
+
+/* ------------------------ 13. ÇERÇEVE / OLAYLAR ------------------------ */
+const $ = s => document.querySelector(s);
+function openModal(html,narrow){ const md=$('#modal'); md.className='modal'+(narrow?' narrow':''); md.innerHTML=html; $('#modalBg').classList.remove('hidden'); }
+function closeModal(){ $('#modalBg').classList.add('hidden'); $('#modal').innerHTML=''; S._openMachine=null; }
+let toastT; function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600); }
+
+function renderChrome(){
+  const alerts=activeAlerts().length; let sec='';
+  $('#sidebar').innerHTML=`<div class="brand"><div class="brand-logo">MP</div><div><div class="brand-name">Makine Parkı</div><div class="brand-sub">Bakım & Ekipman Yönetimi</div></div></div>`+
+    VIEWS.filter(v=>!v.mgr||isMgr()).map(v=>{const h=v.sec!==sec?`<div class="nav-sec">${v.sec}</div>`:''; sec=v.sec;
+      return h+`<button class="nav-btn ${S.view===v.id?'active':''}" data-nav="${v.id}"><span class="ico">${v.ico}</span>${v.label}${v.id==='alerts'&&alerts?`<span class="cnt">${alerts}</span>`:''}</button>`;}).join('')+
+    `<div class="sidebar-foot">Demo / Prototip · v1.0<br>Veriler tarayıcıda saklanır</div>`;
+  $('#mobNav').innerHTML=VIEWS.filter(v=>!v.mgr||isMgr()).map(v=>`<option value="${v.id}" ${S.view===v.id?'selected':''}>${v.label}</option>`).join('');
+  $('#roleSel').innerHTML=`<optgroup label="Yönetici"><option value="manager">Makine Mühendisi — Tüm Şubeler</option></optgroup><optgroup label="Şube Personeli">${DB.branches.map(b=>`<option value="b${b.id}">${esc(b.name)} Personeli</option>`).join('')}</optgroup>`;
+  $('#roleSel').value=isMgr()?'manager':'b'+S.branchId; $('#periodSel').value=S.period;
+  const u=currentUser();
+  $('#scopeBanner').innerHTML = isMgr()
+    ? `<div class="scope-banner mgr">👷 <div><b>${esc(u.full_name)}</b> · Ekipman Bölüm Müdürü — <b>5 şubenin tamamı</b> görüntüleniyor, şube karşılaştırması açık.</div></div>`
+    : `<div class="scope-banner stf">🏢 <div><b>${esc(u.full_name)}</b> · ${esc(IDX.branch[S.branchId].name)} Personeli — Yetki kapsamı: <b>yalnızca ${esc(IDX.branch[S.branchId].name)}</b> (${esc(IDX.branch[S.branchId].region)}) makineleri, kayıtları ve maliyetleri.</div></div>`;
+}
+function render(){
+  if(!isMgr() && S.view==='compare') S.view='dashboard';
+  renderChrome();
+  const v=VIEWS.find(x=>x.id===S.view)||VIEWS[0]; $('#pageTitle').textContent=v.label;
+  const fn={dashboard:viewDashboard,alerts:viewAlerts,compare:viewCompare,machines:viewMachines,transfers:viewTransfers,fuel:viewFuel,oil:viewOil,filters:viewFilters,hours:viewHours,breakdowns:viewBreakdowns,schema:viewSchema}[v.id];
+  $('#view').innerHTML=fn();
+  saveSession();
+}
+
+document.addEventListener('click',e=>{
+  const nav=e.target.closest('[data-nav]'); if(nav){ S.view=nav.dataset.nav; S.mf=''; render(); window.scrollTo(0,0); return; }
+  const srt=e.target.closest('th[data-sort]'); if(srt){ const [id,k]=srt.dataset.sort.split('|'); const cur=S.sort[id]; S.sort[id]={k,dir:cur&&cur.k===k?-cur.dir:(['code','type','label','part','cause','project','oil_type'].includes(k)?1:-1)};
+    if(S._openMachine && srt.closest('#modal')) openMachine(S._openMachine); else render(); return; }
+  const af=e.target.closest('[data-alertf]'); if(af){ S.alertFilter=af.dataset.alertf; render(); return; }
+  const mt=e.target.closest('[data-mtab]'); if(mt){ S.mtab=mt.dataset.mtab; openMachine(+mt.dataset.id); return; }
+  const fk=e.target.closest('[data-fkind]'); if(fk){ openForm(fk.dataset.fkind, +fk.dataset.mid||undefined); return; }
+  const a=e.target.closest('[data-action]'); if(!a) return;
+  const act=a.dataset.action;
+  if(act==='machine'){ e.preventDefault(); S.mtab='maint'; openMachine(+a.dataset.id); }
+  else if(act==='close') closeModal();
+  else if(act==='new-record'){ const k=a.dataset.kind || ({fuel:'fuel',oil:'oil',filters:'filter',hours:'hours',breakdowns:'breakdown',transfers:'transfer'}[S.view]||'fuel'); openForm(k, +a.dataset.mid||undefined); }
+  else if(act==='checkin'){ const t=DB.transfer_logs.find(x=>x.id==a.dataset.id); const m=IDX.machine[t.machine_id];
+    t.checkin_at=isoDT(new Date()); t.checkin_by=currentUser().id; m.project_id=t.to_project_id; m.status='AKTIF';
+    saveDB(); toast(`✓ ${m.code} ${IDX.branch[t.to_branch_id].name} envanterine alındı.`); render(); }
+  else if(act==='close-bd'){ const b=DB.breakdown_logs.find(x=>x.id==a.dataset.id); const now=new Date();
+    b.status='GIDERILDI'; b.resolved_at=isoDT(now); b.downtime_hours=Math.round((now-parseD(b.occurred_at))/3600e3*2)/2;
+    const m=IDX.machine[b.machine_id]; if(!DB.breakdown_logs.some(x=>x.machine_id===m.id&&x.status==='ACIK') && m.status==='ARIZALI') m.status='AKTIF';
+    saveDB(); toast('✓ Arıza kapatıldı, duruş süresi hesaplandı.'); render(); }
+  else if(act==='reset'){ if(confirm('Tüm demo verileri silinip yeniden oluşturulacak. Emin misiniz?')){ DB=seed(); saveDB(); toast('Demo verisi sıfırlandı.'); render(); } }
+  else if(act==='export'){ const blob=new Blob([JSON.stringify({schema:SCHEMA,data:DB},null,2)],{type:'application/json'}); const u=URL.createObjectURL(blob);
+    const l=document.createElement('a'); l.href=u; l.download=`makine-parki-veri-${isoD(TODAY)}.json`; l.click(); setTimeout(()=>URL.revokeObjectURL(u),1000); }
+  else if(act==='copy-ddl'){ const t=$('#ddl').textContent; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('SQL panoya kopyalandı.'),()=>{const r=document.createRange(); r.selectNode($('#ddl')); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Metin seçildi — Ctrl+C ile kopyalayın.');}); }
+});
+$('#modalBg').addEventListener('click',e=>{ if(e.target.id==='modalBg') closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+document.addEventListener('submit',e=>{ if(e.target.id==='recForm'){ e.preventDefault(); submitForm(e.target); } });
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='roleSel'){ if(t.value==='manager') S.role='manager'; else { S.role='branch'; S.branchId=+t.value.slice(1); } S.mf=''; render(); toast(isMgr()?'Mühendis (yönetici) görünümüne geçildi.':`${IDX.branch[S.branchId].name} personeli olarak giriş yapıldı.`); }
+  else if(t.id==='periodSel'){ S.period=t.value; render(); }
+  else if(t.id==='mobNav'){ S.view=t.value; S.mf=''; render(); }
+  else if(t.id==='mf'){ S.mf=t.value; render(); }
+  else if(t.closest('#recForm')){ if(['machine_id','filter_type','operation'].includes(t.name)) formDefaults(); else if(t.name==='part') suggestLast(); updateCalc(); }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){ S.q=e.target.value; const pos=e.target.selectionStart; render(); const q=$('#q'); q.focus(); q.setSelectionRange(pos,pos); }
+  else if(e.target.closest('#recForm')) updateCalc();
+});
+
+/* ------------------------ BAŞLAT ------------------------ */
+DB=loadDB(); buildIndex(); render();
+</script>
+</body>
+</html>
