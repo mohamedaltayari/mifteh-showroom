@@ -8,7 +8,10 @@ DB_PATH = Path(os.environ.get("HAMOUDA_DB_PATH", DATA_DIR / "hamouda.db"))
 UPLOAD_DIR = Path(os.environ.get("HAMOUDA_UPLOAD_DIR", DATA_DIR / "uploads"))
 FRONTEND_DIR = BASE_DIR / "frontend"
 # عند ضبطه تُستخدم PostgreSQL (مثل Supabase) بدل ملف SQLite المحلي — مطلوب عند الاستضافة على Vercel
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL") or ""
+# على Vercel لا يوجد قرص دائم، فلا بد من قاعدة PostgreSQL
+ON_VERCEL = bool(os.environ.get("VERCEL"))
+DB_MISSING = ON_VERCEL and not DATABASE_URL
 DB_SCHEMA = os.environ.get("HAMOUDA_DB_SCHEMA", "public")
 
 # مدة صلاحية جلسة الدخول (بالساعات)

@@ -396,7 +396,12 @@ var Server = (function(){
       var div = document.getElementById("loginDividerText");
       if(div) div.style.display = has ? "" : "none";
       renderLoginQuickSelect();
-    }).catch(function(){});
+    }).catch(function(err){
+      if(err && err.status===503){
+        var e = document.getElementById("loginError");
+        e.textContent = t("srv.dbMissing"); e.hidden = false;
+      }
+    });
   }
   function onLoggedIn(user){
     state.currentRole = user.role;
@@ -504,6 +509,7 @@ var Server = (function(){
   /* ---------- الترجمة الإضافية ---------- */
   var SRV_I18N = {
     ar: {
+      dbMissing:"قاعدة البيانات لم تُربط بالموقع بعد — أضف DATABASE_URL في إعدادات Vercel ثم أعد النشر.",
       setupSub:"أول تشغيل للمنظومة: أنشئ حساب المدير بإيميلك وكلمة مرور تختارها.", setupEmail:"بريدك الإلكتروني (Gmail)", setupBtn:"إنشاء حساب المدير والدخول",
       setupNotice:"هذا الحساب يملك كل الصلاحيات. بعد الدخول أضف حسابات الموظفين من الإعدادات ← المستخدمون والصلاحيات.",
       alreadySetup:"تم إنشاء حساب المدير مسبقًا — سجّل الدخول به.", setupInvalid:"أدخل بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.",
@@ -525,6 +531,7 @@ var Server = (function(){
       serverBackupBtn:"تنزيل نسخة احتياطية كاملة من الخادم"
     },
     en: {
+      dbMissing:"The database is not connected to the site yet — add DATABASE_URL in the Vercel settings and redeploy.",
       setupSub:"First run: create the manager account with your email and a password of your choice.", setupEmail:"Your email (Gmail)", setupBtn:"Create manager account & log in",
       setupNotice:"This account has full access. After logging in, add staff accounts from Settings → Users & roles.",
       alreadySetup:"The manager account already exists — log in with it.", setupInvalid:"Enter a valid email and a password of at least 8 characters.",
@@ -546,6 +553,7 @@ var Server = (function(){
       serverBackupBtn:"Download full server backup"
     },
     zh: {
+      dbMissing:"数据库尚未连接到网站 — 请在 Vercel 设置中添加 DATABASE_URL 并重新部署。",
       setupSub:"首次运行：使用您的邮箱和自选密码创建管理员账户。", setupEmail:"您的邮箱 (Gmail)", setupBtn:"创建管理员账户并登录",
       setupNotice:"此账户拥有全部权限。登录后请在 设置 → 用户与角色 中添加员工账户。",
       alreadySetup:"管理员账户已存在 — 请直接登录。", setupInvalid:"请输入有效邮箱和至少 8 个字符的密码。",

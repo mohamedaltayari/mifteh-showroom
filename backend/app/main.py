@@ -31,7 +31,8 @@ from .security import hash_password, new_token, token_digest, verify_password
 
 @asynccontextmanager
 async def _lifespan(_app: FastAPI):
-    init_db()
+    if not config.DB_MISSING:
+        init_db()
     yield
 
 
@@ -45,6 +46,8 @@ ORDER_NO_RE = re.compile(r"^ORD-(\d+)$")
 
 @app.middleware("http")
 async def _security_headers(request: Request, call_next):
+    if config.DB_MISSING and request.url.path.startswith("/api/"):
+        return JSONResponse({"detail": "database_not_configured"}, status_code=503)
     response = await call_next(request)
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("Referrer-Policy", "same-origin")
