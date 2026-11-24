@@ -5157,7 +5157,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
     errEl.hidden = true;
     document.getElementById("loginPassword").value = "";
   }).catch(function(err){
-    errEl.textContent = (err && err.status===429) ? t("srv.tooMany") : (err && err.status ? t("loginError") : t("srv.offline"));
+    errEl.textContent = (err && err.msgKey) ? t(err.msgKey) : (err && err.status===429) ? t("srv.tooMany") : (err && err.status ? t("loginError") : t("srv.offline"));
     errEl.hidden = false;
   }).then(function(){ btn.disabled = false; });
 });

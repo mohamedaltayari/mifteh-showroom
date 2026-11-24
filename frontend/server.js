@@ -21,6 +21,7 @@ var Server = (function(){
   var pollTimer = null, pulling = false, pendingRefresh = false;
   var offline = false;
   var usersCache = null;
+  var setupMode = false;
 
   /* ---------- طلبات HTTP ---------- */
   function api(method, url, body){
@@ -386,6 +387,9 @@ var Server = (function(){
       LOGIN_ACCOUNTS = {};
       (o.accounts||[]).forEach(function(a){ LOGIN_ACCOUNTS[a.username] = {role:a.role}; });
       LOGIN_DEMO_PASSWORD = o.demoPassword || null;
+      if(o.maxUploadBytes) ATT_MAX_BYTES = o.maxUploadBytes;
+      setupMode = !!o.needsSetup;
+      applySetupUi();
       var has = Object.keys(LOGIN_ACCOUNTS).length>0;
       var sel = document.getElementById("loginQuickSelect");
       if(sel && sel.closest){ var f = sel.closest(".login-field"); if(f) f.style.display = has ? "" : "none"; }
@@ -404,7 +408,49 @@ var Server = (function(){
       if(state.cutoffNotifEnabled) checkCutoffNotifications();
     });
   }
+  /* أول تشغيل بلا حسابات: شاشة الدخول تتحول إلى «إنشاء حساب المدير» */
+  function applySetupUi(){
+    var conf = document.getElementById("loginPasswordConfirmField");
+    var sel = document.getElementById("loginQuickSelect");
+    var qf = sel && sel.closest ? sel.closest(".login-field") : null;
+    var div = document.getElementById("loginDividerText");
+    if(!setupMode){ if(conf) conf.remove(); return; }
+    if(qf) qf.style.display = "none";
+    if(div) div.style.display = "none";
+    document.getElementById("loginSub").textContent = t("srv.setupSub");
+    document.getElementById("loginUsernameLabel").textContent = t("srv.setupEmail");
+    document.getElementById("loginPasswordLabel").textContent = t("srv.newPw");
+    document.getElementById("loginBtnText").textContent = t("srv.setupBtn");
+    document.getElementById("loginDemoNotice").textContent = t("srv.setupNotice");
+    var u = document.getElementById("loginUsername");
+    u.type = "email"; u.autocomplete = "email";
+    document.getElementById("loginPassword").autocomplete = "new-password";
+    if(!conf){
+      var pwField = document.getElementById("loginPassword").closest(".login-field");
+      conf = document.createElement("label");
+      conf.className = "login-field"; conf.id = "loginPasswordConfirmField";
+      conf.innerHTML = '<span></span><input type="password" id="loginPasswordConfirm" autocomplete="new-password" required>';
+      pwField.parentNode.insertBefore(conf, pwField.nextSibling);
+    }
+    conf.querySelector("span").textContent = t("srv.confirmPw");
+  }
   function login(username, password){
+    if(setupMode){
+      var c = document.getElementById("loginPasswordConfirm");
+      var bad = function(k){ var e = new Error(k); e.msgKey = k; return Promise.reject(e); };
+      if(password.length < 8) return bad("srv.pwShort");
+      if(c && c.value !== password) return bad("srv.pwMismatch");
+      return api("POST", "/api/auth/setup", {username:username, password:password}).then(function(res){
+        setupMode = false; applySetupUi();
+        var u = document.getElementById("loginUsername"); u.type = "text";
+        renderLoginTexts();
+        return onLoggedIn(res.user);
+      }).catch(function(err){
+        if(err && err.status===409){ setupMode = false; applySetupUi(); renderLoginTexts(); loadLoginOptions(); err.msgKey = "srv.alreadySetup"; }
+        else if(err && err.status===422){ err.msgKey = "srv.setupInvalid"; }
+        throw err;
+      });
+    }
     return api("POST", "/api/auth/login", {username:username, password:password}).then(function(res){
       return onLoggedIn(res.user);
     });
@@ -458,6 +504,9 @@ var Server = (function(){
   /* ---------- الترجمة الإضافية ---------- */
   var SRV_I18N = {
     ar: {
+      setupSub:"أول تشغيل للمنظومة: أنشئ حساب المدير بإيميلك وكلمة مرور تختارها.", setupEmail:"بريدك الإلكتروني (Gmail)", setupBtn:"إنشاء حساب المدير والدخول",
+      setupNotice:"هذا الحساب يملك كل الصلاحيات. بعد الدخول أضف حسابات الموظفين من الإعدادات ← المستخدمون والصلاحيات.",
+      alreadySetup:"تم إنشاء حساب المدير مسبقًا — سجّل الدخول به.", setupInvalid:"أدخل بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.",
       offline:"تعذّر الاتصال بالخادم — ستُرسل التعديلات تلقائيًا عند عودة الاتصال.",
       conflict:"عدّل مستخدم آخر نفس السجل قبلك — تم تحميل أحدث نسخة، أعد تطبيق تعديلك إن لزم.",
       forbidden:"لا تملك صلاحية حفظ هذا التعديل على الخادم — تم التراجع عنه.",
@@ -476,6 +525,9 @@ var Server = (function(){
       serverBackupBtn:"تنزيل نسخة احتياطية كاملة من الخادم"
     },
     en: {
+      setupSub:"First run: create the manager account with your email and a password of your choice.", setupEmail:"Your email (Gmail)", setupBtn:"Create manager account & log in",
+      setupNotice:"This account has full access. After logging in, add staff accounts from Settings → Users & roles.",
+      alreadySetup:"The manager account already exists — log in with it.", setupInvalid:"Enter a valid email and a password of at least 8 characters.",
       offline:"Cannot reach the server — changes will be sent automatically once the connection is back.",
       conflict:"Another user changed the same record first — the latest version was loaded; re-apply your change if needed.",
       forbidden:"You are not allowed to save this change on the server — it was reverted.",
@@ -494,6 +546,9 @@ var Server = (function(){
       serverBackupBtn:"Download full server backup"
     },
     zh: {
+      setupSub:"首次运行：使用您的邮箱和自选密码创建管理员账户。", setupEmail:"您的邮箱 (Gmail)", setupBtn:"创建管理员账户并登录",
+      setupNotice:"此账户拥有全部权限。登录后请在 设置 → 用户与角色 中添加员工账户。",
+      alreadySetup:"管理员账户已存在 — 请直接登录。", setupInvalid:"请输入有效邮箱和至少 8 个字符的密码。",
       offline:"无法连接服务器 — 连接恢复后将自动发送更改。",
       conflict:"其他用户先修改了同一记录 — 已加载最新版本，如有需要请重新修改。",
       forbidden:"您无权在服务器上保存此更改 — 已撤销。",
@@ -516,6 +571,8 @@ var Server = (function(){
 
   function installI18n(){
     Object.keys(SRV_I18N).forEach(function(l){ if(I18N[l]) I18N[l].srv = SRV_I18N[l]; });
+    var origLoginTexts = window.renderLoginTexts;
+    window.renderLoginTexts = function(){ origLoginTexts(); applySetupUi(); };
     /* إضافة بطاقات الحساب وإدارة المستخدمين إلى صفحة الإعدادات */
     var origSettings = window.viewSettings;
     window.viewSettings = function(){

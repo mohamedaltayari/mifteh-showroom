@@ -13,13 +13,14 @@ import json
 import re
 import time
 import uuid
+from urllib.parse import quote
 from collections import defaultdict
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
 from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, Response, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -169,14 +170,57 @@ def me(user: CurrentUser = Depends(current_user)):
     return {"user": user_payload(user)}
 
 
+def _start_session(conn, user_id: int, response: Response) -> None:
+    token = new_token()
+    expires = (datetime.now(timezone.utc) + timedelta(hours=config.SESSION_HOURS)).isoformat(
+        timespec="milliseconds"
+    ).replace("+00:00", "Z")
+    conn.execute(
+        "INSERT INTO sessions(token_digest,user_id,created_at,expires_at) VALUES(?,?,?,?)",
+        (token_digest(token), user_id, now_iso(), expires),
+    )
+    response.set_cookie(
+        config.COOKIE_NAME, token, httponly=True, samesite="lax", secure=config.COOKIE_SECURE,
+        max_age=config.SESSION_HOURS * 3600, path="/",
+    )
+
+
+class SetupIn(BaseModel):
+    username: str = Field(min_length=3, max_length=120)
+    password: str = Field(min_length=8, max_length=200)
+    displayName: str = ""
+
+
+@app.post("/api/auth/setup")
+def first_setup(body: SetupIn, response: Response):
+    """أول تشغيل بلا حسابات: ينشئ حساب المدير (الإدارة العليا) بالبريد وكلمة المرور التي يختارها صاحب المنظومة."""
+    username = body.username.strip().lower()
+    with get_conn() as conn:
+        with write_tx(conn):
+            if conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] > 0:
+                raise HTTPException(409, "already_setup")
+            conn.execute(
+                "INSERT INTO users(username, display_name, password_hash, role, created_at) VALUES(?,?,?,?,?)",
+                (username, body.displayName.strip(), hash_password(body.password), "senior_management", now_iso()),
+            )
+            row = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+            _start_session(conn, row["id"], response)
+    user = CurrentUser(id=row["id"], username=row["username"], display_name=row["display_name"], role=row["role"])
+    return {"user": user_payload(user)}
+
+
 @app.get("/api/auth/login-options")
 def login_options():
-    """قائمة الاختيار السريع في شاشة الدخول (وضع التجربة فقط)."""
-    if not config.DEMO_AUTOFILL:
-        return {"accounts": [], "demoPassword": None}
+    """قائمة الاختيار السريع في شاشة الدخول (وضع التجربة فقط)، وهل المنظومة تحتاج إعدادًا أوليًا."""
     with get_conn() as conn:
+        needs_setup = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
         rows = conn.execute("SELECT username, role FROM users WHERE active=1 ORDER BY id").fetchall()
-    return {"accounts": [dict(r) for r in rows], "demoPassword": config.DEFAULT_PASSWORD}
+    if not config.DEMO_AUTOFILL:
+        return {"accounts": [], "demoPassword": None, "maxUploadBytes": config.MAX_UPLOAD_BYTES,
+                "needsSetup": needs_setup}
+    return {"accounts": [{"username": r["username"], "role": r["role"]} for r in rows],
+            "demoPassword": config.DEFAULT_PASSWORD, "maxUploadBytes": config.MAX_UPLOAD_BYTES,
+            "needsSetup": needs_setup}
 
 
 class ChangePasswordIn(BaseModel):
@@ -238,12 +282,12 @@ def create_user(body: UserCreateIn, user: CurrentUser = Depends(require("system:
         if conn.execute("SELECT 1 FROM users WHERE username=?", (username,)).fetchone():
             raise HTTPException(409, "username_taken")
         with write_tx(conn):
-            cur = conn.execute(
+            conn.execute(
                 "INSERT INTO users(username, display_name, password_hash, role, created_at) VALUES(?,?,?,?,?)",
                 (username, body.displayName.strip(), hash_password(body.password), body.role, now_iso()),
             )
             _audit(conn, user, "User", username, "CREATE")
-        row = conn.execute("SELECT * FROM users WHERE id=?", (cur.lastrowid,)).fetchone()
+        row = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
     return {"user": _user_row(row)}
 
 
@@ -409,10 +453,8 @@ def sync(body: SyncIn, user: CurrentUser = Depends(current_user)):
 
         # ---------- الطلبيات ----------
         used_numbers = {
-            r["num"]: r["id"]
-            for r in conn.execute(
-                "SELECT id, json_extract(data,'$.orderNumber') AS num FROM records WHERE kind='order' AND deleted=0"
-            ).fetchall()
+            json.loads(r["data"]).get("orderNumber"): r["id"]
+            for r in conn.execute("SELECT id, data FROM records WHERE kind='order' AND deleted=0").fetchall()
         }
         for item in body.orders.upsert:
             row = current("order", item.id)
@@ -541,58 +583,53 @@ def backup(user: CurrentUser = Depends(require("system:manage_settings"))):
 ATT_ID_RE = re.compile(r"^att[A-Za-z0-9_-]{6,80}$")
 
 
-def _att_path(att_id: str):
+def _check_att_id(att_id: str) -> None:
     if not ATT_ID_RE.match(att_id):
         raise HTTPException(400, "bad_id")
-    return config.UPLOAD_DIR / att_id
 
 
 @app.post("/api/attachments", status_code=201)
 async def upload_attachment(file: UploadFile = File(...), user: CurrentUser = Depends(current_user)):
+    """المرفق يُحفظ داخل قاعدة البيانات نفسها، فيعمل على أي استضافة (حتى بدون قرص دائم)."""
     ctype = (file.content_type or "").lower()
     name = (file.filename or "document").replace("\\", "/").split("/")[-1][:200]
     if not (ctype.startswith("image/") or ctype == "application/pdf" or name.lower().endswith(".pdf")):
         raise HTTPException(415, "ui.attBadType")
+    content = bytearray()
+    while chunk := await file.read(1024 * 1024):
+        content.extend(chunk)
+        if len(content) > config.MAX_UPLOAD_BYTES:
+            raise HTTPException(413, "ui.attTooBig")
     att_id = "att" + uuid.uuid4().hex
-    path = _att_path(att_id)
-    size = 0
-    with open(path, "wb") as out:
-        while chunk := await file.read(1024 * 1024):
-            size += len(chunk)
-            if size > config.MAX_UPLOAD_BYTES:
-                out.close()
-                path.unlink(missing_ok=True)
-                raise HTTPException(413, "ui.attTooBig")
-            out.write(chunk)
-    meta = {"id": att_id, "name": name, "size": size, "type": ctype or "application/octet-stream",
+    meta = {"id": att_id, "name": name, "size": len(content), "type": ctype or "application/octet-stream",
             "at": now_iso(), "by": user.role}
     with get_conn() as conn:
         conn.execute(
-            "INSERT INTO attachments(id,name,type,size,uploaded_by,uploaded_at) VALUES(?,?,?,?,?,?)",
-            (att_id, name, meta["type"], size, user.username, meta["at"]),
+            "INSERT INTO attachments(id,name,type,size,uploaded_by,uploaded_at,content) VALUES(?,?,?,?,?,?,?)",
+            (att_id, name, meta["type"], meta["size"], user.username, meta["at"], bytes(content)),
         )
     return meta
 
 
 @app.get("/api/attachments/{att_id}")
 def get_attachment(att_id: str, download: bool = False, user: CurrentUser = Depends(current_user)):
-    path = _att_path(att_id)
+    _check_att_id(att_id)
     with get_conn() as conn:
         row = conn.execute("SELECT * FROM attachments WHERE id=?", (att_id,)).fetchone()
-    if not row or not path.exists():
+    if not row or row["content"] is None:
         raise HTTPException(404, "ui.attMissing")
-    return FileResponse(
-        path, media_type=row["type"], filename=row["name"],
-        content_disposition_type="attachment" if download else "inline",
+    disp = "attachment" if download else "inline"
+    return Response(
+        content=bytes(row["content"]), media_type=row["type"],
+        headers={"Content-Disposition": f"{disp}; filename*=UTF-8''{quote(row['name'])}"},
     )
 
 
 @app.delete("/api/attachments/{att_id}")
 def delete_attachment(att_id: str, user: CurrentUser = Depends(current_user)):
-    path = _att_path(att_id)
+    _check_att_id(att_id)
     with get_conn() as conn:
         conn.execute("DELETE FROM attachments WHERE id=?", (att_id,))
-    path.unlink(missing_ok=True)
     return {"ok": True}
 
 
